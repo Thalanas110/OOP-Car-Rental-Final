@@ -1,0 +1,79 @@
+//carstable
+CREATE TABLE carstable (
+    carID int not null,
+    car_brand varchar(50),
+    car_model varchar(50),
+    manu_year varchar(10),
+    daily_rate decimal(10,2),
+    AC boolean,
+    seating_capacity int(10),
+    plate_no varchar(10),
+    isdeleted boolean,
+    PRIMARY KEY (carID)
+);
+//populating carstable for test
+INSERT INTO `carstable`(`carID`, `car_brand`, `car_model`, `manu_year`, `daily_rate`, `AC`, `seating_capacity`, `plate_no`, `isdeleted`) VALUES (1,'Toyota','Corola','2019','2000',1,5,'NIG 5441',0);
+//userstable
+CREATE TABLE userstable (
+    userID int not null,
+    name varchar(50),
+    user_email varchar(50),
+    user_password varchar(10),
+    contact_no varchar(20),
+    isdeleted boolean,
+    PRIMARY KEY (userID)
+);
+//admintable
+CREATE TABLE admintable (
+    adminID int not null,
+    lname varchar(50),
+    fname varchar(50),
+    admin_email varchar(50),
+    admin_password varchar(10),
+    isdeleted boolean,
+    PRIMARY KEY (adminID)
+);
+//bookingtable
+CREATE TABLE bookingtable (
+    bookingID int NOT NULL,
+    carID int,
+    userID int,
+    daily_rate int,
+    PRIMARY KEY (bookingID),
+    FOREIGN KEY (carID) REFERENCES carstable(carID),
+    FOREIGN KEY (userID) REFERENCES userstable(userID)
+);
+
+//accountstable
+CREATE TABLE accountstable (
+    id int not null,
+    adminID	int not null,
+    admin_email varchar(50),
+    admin_password varchar(100),
+   
+    token text,
+    
+    PRIMARY KEY (id)
+);
+//joining daily_rate from carstable to bookingtable
+UPDATE bookingtable
+INNER JOIN carstable ON bookingtable.carID = carstable.carID
+SET bookingtable.daily_rate = carstable.daily_rate
+WHERE bookingtable.daily_rate IS NULL;
+
+//debugging null records
+UPDATE 
+    billingtable b
+JOIN 
+    bookingtable bo ON b.bookingID = bo.bookingID
+SET 
+    b.carID = bo.carID
+WHERE 
+    b.carID IS NULL;
+
+UPDATE billingtable b
+JOIN bookingtable bo ON b.bookingID = bo.bookingID
+JOIN carstable c ON bo.carID = c.carID
+SET b.daily_rate = c.daily_rate,
+    b.total_cost = bo.total_cost
+WHERE b.daily_rate IS NULL OR b.total_cost IS NULL;
