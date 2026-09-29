@@ -6,7 +6,7 @@
 
 **Architecture:** Slim 4 and PHP-DI stay at the HTTP/composition edge. Identity, Users, Fleet, Bookings, and Billing are bounded modules with Domain, Application, Infrastructure, and Presentation layers. Existing PDO tables remain the initial persistence contract behind repository interfaces, while routes.php?request=... remains a compatibility adapter.
 
-**Tech Stack:** PHP 8.3+, Composer, Slim 4, PHP-DI 7, Nyholm PSR-7, PDO MySQL/MariaDB, PHPUnit 11, PHPStan level 9, PHP-CS-Fixer, OpenAPI 3.1, Swagger UI, GitHub Actions, Docker Compose.
+**Tech Stack:** PHP 8.3+, Composer, Slim 4, PHP-DI 7, Nyholm PSR-7, PDO MySQL/MariaDB, PHPUnit 11, PHPStan level 9, PHP-CS-Fixer, OpenAPI 3.1, Swagger UI, GitHub Actions, Docker Compose. Authentication uses opaque tokens generated with random_bytes and stored with an expiry.
 
 ## Global Constraints
 
@@ -304,10 +304,10 @@ git commit -m "feat: add typed application configuration"
 
 **Files:** src/Modules/Identity/Application/Security/PasswordHasher.php, src/Modules/Identity/Infrastructure/Security/NativePasswordHasher.php, src/Modules/Identity/Application/Security/TokenIssuer.php, src/Modules/Identity/Infrastructure/Security/JwtTokenIssuer.php, tests/Unit/Modules/Identity/SecurityTest.php.
 
-**Interfaces:** PasswordHasher::hash(string): string, verify(string, string): bool; TokenIssuer::issue(UserId, Email): Token.
+**Interfaces:** PasswordHasher::hash(string): string, verify(string, string): bool; TokenIssuer::issue(UserId, Email): Token; TokenVerifier::verify(string): UserId.
 
 - [ ] **Step 1:** Test password verification and token expiry/claims; verify red.
-- [ ] **Step 2:** Implement native password hashing and Firebase JWT with configured secret and TTL.
+- [ ] **Step 2:** Implement native password hashing plus random opaque token issuance and verification with configured TTL.
 - [ ] **Step 3:** Run the test; expected pass.
 - [ ] **Step 4:** Commit git add src/Modules/Identity tests/Unit/Modules/Identity/SecurityTest.php; git commit -m "feat: add identity security services".
 
