@@ -63,17 +63,30 @@ final readonly class PdoAccountRepository implements AccountRepository
         ]);
     }
 
-    /** @param array<string, mixed>|false $row */
-    private function hydrate(array|false $row): ?Account
+    private function hydrate(mixed $row): ?Account
     {
-        if ($row === false) {
+        if (!is_array($row)) {
             return null;
         }
 
         return Account::register(
-            UserId::fromInt((int) $row['userID']),
-            Email::fromString((string) $row['user_email']),
-            PasswordHash::fromString((string) $row['user_password']),
+            UserId::fromInt($this->intValue($row, 'userID')),
+            Email::fromString($this->stringValue($row, 'user_email')),
+            PasswordHash::fromString($this->stringValue($row, 'user_password')),
         );
+    }
+
+    /** @param array<mixed, mixed> $row */
+    private function intValue(array $row, string $key): int
+    {
+        $value = $row[$key] ?? 0;
+        return is_int($value) ? $value : (is_numeric($value) ? (int) $value : 0);
+    }
+
+    /** @param array<mixed, mixed> $row */
+    private function stringValue(array $row, string $key): string
+    {
+        $value = $row[$key] ?? '';
+        return is_scalar($value) ? (string) $value : '';
     }
 }

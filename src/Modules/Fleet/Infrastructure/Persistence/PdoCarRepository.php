@@ -73,16 +73,43 @@ final readonly class PdoCarRepository implements CarRepository
         $statement->execute(['id' => $id->toInt()]);
     }
 
-    /** @param array<string, mixed>|false $row */
-    private function hydrate(array|false $row): ?Car
+    private function hydrate(mixed $row): ?Car
     {
-        if ($row === false) {
+        if (!is_array($row)) {
             return null;
         }
 
         return Car::reconstitute(
-            CarId::fromInt((int) $row['carID']), (string) $row['car_brand'], (string) $row['car_model'], $row['manu_year'] !== null ? (string) $row['manu_year'] : null,
-            Money::fromDecimal((string) $row['daily_rate']), (bool) $row['AC'], (int) $row['seating_capacity'], $row['plate_no'] !== null ? (string) $row['plate_no'] : null, (bool) $row['isdeleted'],
+            CarId::fromInt($this->intValue($row, 'carID')), $this->stringValue($row, 'car_brand'), $this->stringValue($row, 'car_model'), $this->nullableStringValue($row, 'manu_year'),
+            Money::fromDecimal($this->stringValue($row, 'daily_rate')), $this->boolValue($row, 'AC'), $this->intValue($row, 'seating_capacity'), $this->nullableStringValue($row, 'plate_no'), $this->boolValue($row, 'isdeleted'),
         );
+    }
+
+    /** @param array<mixed, mixed> $row */
+    private function intValue(array $row, string $key): int
+    {
+        $value = $row[$key] ?? 0;
+        return is_int($value) ? $value : (is_numeric($value) ? (int) $value : 0);
+    }
+
+    /** @param array<mixed, mixed> $row */
+    private function stringValue(array $row, string $key): string
+    {
+        $value = $row[$key] ?? '';
+        return is_scalar($value) ? (string) $value : '';
+    }
+
+    /** @param array<mixed, mixed> $row */
+    private function nullableStringValue(array $row, string $key): ?string
+    {
+        $value = $row[$key] ?? null;
+        return $value === null ? null : (is_scalar($value) ? (string) $value : null);
+    }
+
+    /** @param array<mixed, mixed> $row */
+    private function boolValue(array $row, string $key): bool
+    {
+        $value = $row[$key] ?? false;
+        return is_bool($value) ? $value : (is_numeric($value) ? (int) $value !== 0 : $value === 'true');
     }
 }

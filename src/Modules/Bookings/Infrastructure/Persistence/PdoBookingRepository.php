@@ -41,7 +41,21 @@ final readonly class PdoBookingRepository implements BookingRepository
         $statement = $this->pdo->prepare('SELECT bookingID, carID, userID, daily_rate, book_date, return_date, total_cost FROM bookingtable WHERE bookingID = :id LIMIT 1');
         $statement->execute(['id' => $id->toInt()]);
         $row = $statement->fetch();
-        if ($row === false) { return null; }
-        return Booking::reconstitute(BookingId::fromInt((int) $row['bookingID']), CarId::fromInt((int) $row['carID']), UserId::fromInt((int) $row['userID']), DateRange::between(new DateTimeImmutable((string) $row['book_date']), new DateTimeImmutable((string) $row['return_date'])), Money::fromDecimal((string) $row['daily_rate']), Money::fromDecimal((string) $row['total_cost']));
+        if (!is_array($row)) { return null; }
+        return Booking::reconstitute(BookingId::fromInt($this->intValue($row, 'bookingID')), CarId::fromInt($this->intValue($row, 'carID')), UserId::fromInt($this->intValue($row, 'userID')), DateRange::between(new DateTimeImmutable($this->stringValue($row, 'book_date')), new DateTimeImmutable($this->stringValue($row, 'return_date'))), Money::fromDecimal($this->stringValue($row, 'daily_rate')), Money::fromDecimal($this->stringValue($row, 'total_cost')));
+    }
+
+    /** @param array<mixed, mixed> $row */
+    private function intValue(array $row, string $key): int
+    {
+        $value = $row[$key] ?? 0;
+        return is_int($value) ? $value : (is_numeric($value) ? (int) $value : 0);
+    }
+
+    /** @param array<mixed, mixed> $row */
+    private function stringValue(array $row, string $key): string
+    {
+        $value = $row[$key] ?? '';
+        return is_scalar($value) ? (string) $value : '';
     }
 }

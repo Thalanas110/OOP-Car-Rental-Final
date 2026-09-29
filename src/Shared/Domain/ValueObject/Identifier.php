@@ -6,6 +6,7 @@ namespace App\Shared\Domain\ValueObject;
 
 use InvalidArgumentException;
 
+/** @phpstan-consistent-constructor */
 abstract readonly class Identifier
 {
     protected function __construct(private int $value)

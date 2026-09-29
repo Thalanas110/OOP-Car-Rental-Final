@@ -20,7 +20,8 @@ final readonly class BookingController
         $body = $request->getParsedBody();
         if (!is_array($body)) { throw new ValidationException('Request body must be a JSON object.'); }
         $view = ($this->createBooking)(new CreateBooking($this->positiveInt($body, 'carID'), $this->positiveInt($body, 'userID'), $this->string($body, 'book_date'), $this->string($body, 'return_date')));
-        return $this->responder->success($view->toArray(), 201, ['request_id' => (string) ($request->getAttribute('request_id') ?? 'unknown')]);
+        $requestId = $request->getAttribute('request_id');
+        return $this->responder->success($view->toArray(), 201, ['request_id' => is_string($requestId) ? $requestId : 'unknown']);
     }
 
     /** @param array<string, mixed> $body */

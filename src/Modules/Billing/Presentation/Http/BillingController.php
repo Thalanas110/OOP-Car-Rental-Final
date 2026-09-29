@@ -24,6 +24,7 @@ final readonly class BillingController
         if ((!is_int($bookingId) && !(is_string($bookingId) && ctype_digit($bookingId))) || (int) $bookingId < 1) { throw new ValidationException('bookingID must be a positive integer.'); }
         if (!is_string($amount) || trim($amount) === '') { throw new ValidationException('amount_paid is required.'); }
         $view = ($this->recordPayment)(new RecordPayment((int) $bookingId, $amount));
-        return $this->responder->success($view->toArray(), 201, ['request_id' => (string) ($request->getAttribute('request_id') ?? 'unknown')]);
+        $requestId = $request->getAttribute('request_id');
+        return $this->responder->success($view->toArray(), 201, ['request_id' => is_string($requestId) ? $requestId : 'unknown']);
     }
 }

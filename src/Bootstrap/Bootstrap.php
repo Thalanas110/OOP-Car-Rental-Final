@@ -54,30 +54,117 @@ final class Bootstrap
             JsonResponder::class => static fn (): JsonResponder => new JsonResponder(),
             DocsController::class => static fn (): DocsController => new DocsController(dirname(__DIR__, 2) . '/docs/openapi/openapi.yaml', dirname(__DIR__, 2) . '/public/docs/index.html'),
             Clock::class => static fn (): Clock => new SystemClock(),
-            TransactionManager::class => static fn (ContainerInterface $container): TransactionManager => new PdoTransactionManager($container->get(PDO::class)),
-            AccountRepository::class => static fn (ContainerInterface $container): AccountRepository => new \App\Modules\Identity\Infrastructure\Persistence\PdoAccountRepository($container->get(PDO::class)),
-            PasswordUpdater::class => static fn (ContainerInterface $container): PasswordUpdater => new \App\Modules\Identity\Infrastructure\Persistence\PdoPasswordUpdater($container->get(PDO::class)),
+            TransactionManager::class => static function (ContainerInterface $container): TransactionManager {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                return new PdoTransactionManager($pdo);
+            },
+            AccountRepository::class => static function (ContainerInterface $container): AccountRepository {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                return new \App\Modules\Identity\Infrastructure\Persistence\PdoAccountRepository($pdo);
+            },
+            PasswordUpdater::class => static function (ContainerInterface $container): PasswordUpdater {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                return new \App\Modules\Identity\Infrastructure\Persistence\PdoPasswordUpdater($pdo);
+            },
             PasswordHasher::class => static fn (): PasswordHasher => new NativePasswordHasher(),
-            TokenIssuer::class => static fn (ContainerInterface $container): TokenIssuer => $container->get(OpaqueTokenIssuer::class),
-            TokenVerifier::class => static fn (ContainerInterface $container): TokenVerifier => $container->get(OpaqueTokenIssuer::class),
-            OpaqueTokenIssuer::class => static fn (ContainerInterface $container): OpaqueTokenIssuer => new OpaqueTokenIssuer($container->get(AccountRepository::class), $container->get(Clock::class), $container->get(Config::class)),
-            UserRepository::class => static fn (ContainerInterface $container): UserRepository => new \App\Modules\Users\Infrastructure\Persistence\PdoUserRepository($container->get(PDO::class)),
-            CarRepository::class => static fn (ContainerInterface $container): CarRepository => new \App\Modules\Fleet\Infrastructure\Persistence\PdoCarRepository($container->get(PDO::class), Money::fromDecimal($container->get(Config::class)->luxuryCarDailyRate())),
-            UserExistenceReader::class => static fn (ContainerInterface $container): UserExistenceReader => new \App\Modules\Users\Infrastructure\Adapter\PdoUserExistenceReader($container->get(PDO::class)),
-            CarRateReader::class => static fn (ContainerInterface $container): CarRateReader => new \App\Modules\Fleet\Infrastructure\Adapter\PdoCarRateReader($container->get(PDO::class)),
-            VipStatusReader::class => static fn (ContainerInterface $container): VipStatusReader => new \App\Modules\Identity\Infrastructure\Adapter\PdoVipStatusReader($container->get(PDO::class), Money::fromDecimal($container->get(Config::class)->vipPointsThreshold())),
-            BookingRepository::class => static fn (ContainerInterface $container): BookingRepository => new \App\Modules\Bookings\Infrastructure\Persistence\PdoBookingRepository($container->get(PDO::class)),
+            TokenIssuer::class => static function (ContainerInterface $container): TokenIssuer {
+                /** @var OpaqueTokenIssuer $issuer */
+                $issuer = $container->get(OpaqueTokenIssuer::class);
+                return $issuer;
+            },
+            TokenVerifier::class => static function (ContainerInterface $container): TokenVerifier {
+                /** @var OpaqueTokenIssuer $verifier */
+                $verifier = $container->get(OpaqueTokenIssuer::class);
+                return $verifier;
+            },
+            OpaqueTokenIssuer::class => static function (ContainerInterface $container): OpaqueTokenIssuer {
+                /** @var AccountRepository $accounts */
+                $accounts = $container->get(AccountRepository::class);
+                /** @var Clock $clock */
+                $clock = $container->get(Clock::class);
+                /** @var Config $config */
+                $config = $container->get(Config::class);
+                return new OpaqueTokenIssuer($accounts, $clock, $config);
+            },
+            UserRepository::class => static function (ContainerInterface $container): UserRepository {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                return new \App\Modules\Users\Infrastructure\Persistence\PdoUserRepository($pdo);
+            },
+            CarRepository::class => static function (ContainerInterface $container): CarRepository {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                /** @var Config $config */
+                $config = $container->get(Config::class);
+                return new \App\Modules\Fleet\Infrastructure\Persistence\PdoCarRepository($pdo, Money::fromDecimal($config->luxuryCarDailyRate()));
+            },
+            UserExistenceReader::class => static function (ContainerInterface $container): UserExistenceReader {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                return new \App\Modules\Users\Infrastructure\Adapter\PdoUserExistenceReader($pdo);
+            },
+            CarRateReader::class => static function (ContainerInterface $container): CarRateReader {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                return new \App\Modules\Fleet\Infrastructure\Adapter\PdoCarRateReader($pdo);
+            },
+            VipStatusReader::class => static function (ContainerInterface $container): VipStatusReader {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                /** @var Config $config */
+                $config = $container->get(Config::class);
+                return new \App\Modules\Identity\Infrastructure\Adapter\PdoVipStatusReader($pdo, Money::fromDecimal($config->vipPointsThreshold()));
+            },
+            BookingRepository::class => static function (ContainerInterface $container): BookingRepository {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                return new \App\Modules\Bookings\Infrastructure\Persistence\PdoBookingRepository($pdo);
+            },
             BookingPolicy::class => static fn (): BookingPolicy => new BookingPolicy(),
-            CreateBookingHandler::class => static fn (ContainerInterface $container): CreateBookingHandler => new CreateBookingHandler($container->get(BookingRepository::class), $container->get(UserExistenceReader::class), $container->get(CarRateReader::class), $container->get(VipStatusReader::class), $container->get(BookingPolicy::class), $container->get(TransactionManager::class), Money::fromDecimal($container->get(Config::class)->luxuryCarDailyRate())),
-            PaymentRepository::class => static fn (ContainerInterface $container): PaymentRepository => new \App\Modules\Billing\Infrastructure\Persistence\PdoPaymentRepository($container->get(PDO::class)),
-            VipAccountPort::class => static fn (ContainerInterface $container): VipAccountPort => new \App\Modules\Billing\Infrastructure\Persistence\PdoVipAccountAdapter($container->get(PDO::class)),
-            VipPolicy::class => static fn (ContainerInterface $container): VipPolicy => new VipPolicy(Money::fromDecimal($container->get(Config::class)->vipPointsThreshold())),
+            CreateBookingHandler::class => static function (ContainerInterface $container): CreateBookingHandler {
+                /** @var BookingRepository $bookings */
+                $bookings = $container->get(BookingRepository::class);
+                /** @var UserExistenceReader $users */
+                $users = $container->get(UserExistenceReader::class);
+                /** @var CarRateReader $cars */
+                $cars = $container->get(CarRateReader::class);
+                /** @var VipStatusReader $vipStatus */
+                $vipStatus = $container->get(VipStatusReader::class);
+                /** @var BookingPolicy $policy */
+                $policy = $container->get(BookingPolicy::class);
+                /** @var TransactionManager $transactions */
+                $transactions = $container->get(TransactionManager::class);
+                /** @var Config $config */
+                $config = $container->get(Config::class);
+                return new CreateBookingHandler($bookings, $users, $cars, $vipStatus, $policy, $transactions, Money::fromDecimal($config->luxuryCarDailyRate()));
+            },
+            PaymentRepository::class => static function (ContainerInterface $container): PaymentRepository {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                return new \App\Modules\Billing\Infrastructure\Persistence\PdoPaymentRepository($pdo);
+            },
+            VipAccountPort::class => static function (ContainerInterface $container): VipAccountPort {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                return new \App\Modules\Billing\Infrastructure\Persistence\PdoVipAccountAdapter($pdo);
+            },
+            VipPolicy::class => static function (ContainerInterface $container): VipPolicy {
+                /** @var Config $config */
+                $config = $container->get(Config::class);
+                return new VipPolicy(Money::fromDecimal($config->vipPointsThreshold()));
+            },
         ]);
 
         return $builder->build();
     }
 
-    /** @param array<string, string> $environment */
+    /**
+     * @param array<string, string> $environment
+     * @return App<ContainerInterface>
+     */
     public static function createApp(array $environment = []): App
     {
         $container = self::createContainer($environment);

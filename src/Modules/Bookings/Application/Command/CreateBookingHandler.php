@@ -13,6 +13,7 @@ use App\Modules\Identity\Application\Port\VipStatusReader;
 use App\Modules\Users\Application\Port\UserExistenceReader;
 use App\Shared\Application\Transaction\TransactionManager;
 use App\Shared\Domain\Exception\ValidationException;
+use App\Shared\Domain\Exception\NotFoundException;
 use App\Shared\Domain\ValueObject\CarId;
 use App\Shared\Domain\ValueObject\DateRange;
 use App\Shared\Domain\ValueObject\Money;
@@ -38,7 +39,10 @@ final readonly class CreateBookingHandler
             $rate = $this->cars->rateFor($carId);
             $userExists = $this->users->exists($userId);
             $carExists = $rate !== null;
-            $luxury = $rate?->isGreaterThanOrEqualTo($this->luxuryThreshold) ?? false;
+            if ($rate === null) {
+                throw new NotFoundException('Car was not found.');
+            }
+            $luxury = $rate->isGreaterThanOrEqualTo($this->luxuryThreshold);
             $this->policy->assertBookable($userExists, $carExists, $luxury, $this->vipStatus->isVip($userId), $this->bookings->hasOverlap($carId, $range), $range);
 
             return BookingView::fromEntity($this->bookings->save(Booking::create($carId, $userId, $range, $rate)));

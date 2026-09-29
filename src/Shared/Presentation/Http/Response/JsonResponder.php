@@ -10,7 +10,10 @@ use Psr\Http\Message\ResponseInterface;
 
 final class JsonResponder
 {
-    /** @param array<string, mixed>|list<mixed>|null $data @param array<string, mixed> $meta */
+    /**
+     * @param array<string, mixed>|list<mixed>|null $data
+     * @param array<string, mixed> $meta
+     */
     public function success(?array $data, int $status, array $meta = []): ResponseInterface
     {
         return $this->response(ResponseEnvelope::success($data, $meta)->toArray(), $status);
@@ -19,7 +22,8 @@ final class JsonResponder
     /** @param array<string, mixed> $errorResponse */
     public function error(array $errorResponse): ResponseInterface
     {
-        return $this->response(ResponseEnvelope::error($errorResponse)->toArray(), (int) $errorResponse['status']);
+        $status = $errorResponse['status'] ?? 500;
+        return $this->response(ResponseEnvelope::error($errorResponse)->toArray(), is_int($status) ? $status : 500);
     }
 
     /** @param array<string, mixed> $payload */

@@ -47,7 +47,7 @@ final readonly class FleetController
     public function create(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $body = $this->body($request);
-        $view = ($this->createCar)(new CreateCar($this->string($body, 'car_brand'), $this->string($body, 'car_model'), isset($body['manu_year']) ? (string) $body['manu_year'] : null, $this->string($body, 'daily_rate'), (bool) ($body['AC'] ?? false), $this->positiveInt($body, 'seating_capacity'), isset($body['plate_no']) ? (string) $body['plate_no'] : null));
+        $view = ($this->createCar)(new CreateCar($this->string($body, 'car_brand'), $this->string($body, 'car_model'), $this->optionalString($body, 'manu_year'), $this->string($body, 'daily_rate'), (bool) ($body['AC'] ?? false), $this->positiveInt($body, 'seating_capacity'), $this->optionalString($body, 'plate_no')));
         return $this->responder->success($view->toArray(), 201, $this->meta($request));
     }
 
@@ -55,7 +55,7 @@ final readonly class FleetController
     public function update(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $body = $this->body($request);
-        $view = ($this->updateCar)(new UpdateCar($this->id($args), $this->string($body, 'daily_rate'), isset($body['plate_no']) ? (string) $body['plate_no'] : null));
+        $view = ($this->updateCar)(new UpdateCar($this->id($args), $this->string($body, 'daily_rate'), $this->optionalString($body, 'plate_no')));
         return $this->responder->success($view->toArray(), 200, $this->meta($request));
     }
 
@@ -90,6 +90,13 @@ final readonly class FleetController
     }
 
     /** @param array<string, mixed> $body */
+    private function optionalString(array $body, string $key): ?string
+    {
+        $value = $body[$key] ?? null;
+        return $value === null ? null : (is_scalar($value) ? (string) $value : null);
+    }
+
+    /** @param array<string, mixed> $body */
     private function positiveInt(array $body, string $key): int
     {
         $value = $body[$key] ?? null;
@@ -102,5 +109,9 @@ final readonly class FleetController
     /** @param array<string, string> $args */
     private function id(array $args): int { return $this->positiveInt($args, 'id'); }
     /** @return array{request_id: string} */
-    private function meta(ServerRequestInterface $request): array { return ['request_id' => (string) ($request->getAttribute('request_id') ?? 'unknown')]; }
+    private function meta(ServerRequestInterface $request): array
+    {
+        $requestId = $request->getAttribute('request_id');
+        return ['request_id' => is_string($requestId) ? $requestId : 'unknown'];
+    }
 }

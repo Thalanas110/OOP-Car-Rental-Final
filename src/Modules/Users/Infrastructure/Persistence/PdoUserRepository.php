@@ -26,7 +26,11 @@ final readonly class PdoUserRepository implements UserRepository
 
     public function listActive(): array
     {
-        $rows = $this->pdo->query('SELECT userID, name, contact_no, drivers_license, isdeleted FROM userstable WHERE isdeleted = 0 ORDER BY userID')->fetchAll();
+        $statement = $this->pdo->query('SELECT userID, name, contact_no, drivers_license, isdeleted FROM userstable WHERE isdeleted = 0 ORDER BY userID');
+        if ($statement === false) {
+            return [];
+        }
+        $rows = $statement->fetchAll();
 
         return array_values(array_filter(array_map(fn (array $row): ?User => $this->hydrate($row), $rows)));
     }
@@ -78,19 +82,39 @@ final readonly class PdoUserRepository implements UserRepository
         $statement->execute(['id' => $id->toInt()]);
     }
 
-    /** @param array<string, mixed>|false $row */
-    private function hydrate(array|false $row): ?User
+    private function hydrate(mixed $row): ?User
     {
-        if ($row === false) {
+        if (!is_array($row)) {
             return null;
         }
 
         return User::reconstitute(
-            UserId::fromInt((int) $row['userID']),
-            (string) $row['name'],
-            (string) $row['contact_no'],
-            DriverLicense::fromString((string) $row['drivers_license']),
-            (bool) $row['isdeleted'],
+            UserId::fromInt($this->intValue($row, 'userID')),
+            $this->stringValue($row, 'name'),
+            $this->stringValue($row, 'contact_no'),
+            DriverLicense::fromString($this->stringValue($row, 'drivers_license')),
+            $this->boolValue($row, 'isdeleted'),
         );
+    }
+
+    /** @param array<mixed, mixed> $row */
+    private function intValue(array $row, string $key): int
+    {
+        $value = $row[$key] ?? 0;
+        return is_int($value) ? $value : (is_numeric($value) ? (int) $value : 0);
+    }
+
+    /** @param array<mixed, mixed> $row */
+    private function stringValue(array $row, string $key): string
+    {
+        $value = $row[$key] ?? '';
+        return is_scalar($value) ? (string) $value : '';
+    }
+
+    /** @param array<mixed, mixed> $row */
+    private function boolValue(array $row, string $key): bool
+    {
+        $value = $row[$key] ?? false;
+        return is_bool($value) ? $value : (is_numeric($value) ? (int) $value !== 0 : $value === 'true');
     }
 }

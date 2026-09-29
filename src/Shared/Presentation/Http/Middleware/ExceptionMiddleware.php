@@ -22,7 +22,8 @@ final readonly class ExceptionMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         } catch (Throwable $exception) {
             error_log($exception->getMessage());
-            return $this->responder->error(ErrorResponse::fromException($exception, (string) ($request->getAttribute('request_id') ?? 'unknown')));
+            $requestId = $request->getAttribute('request_id');
+            return $this->responder->error(ErrorResponse::fromException($exception, is_string($requestId) ? $requestId : 'unknown'));
         }
     }
 }

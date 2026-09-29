@@ -26,7 +26,8 @@ final readonly class AuthorizationMiddleware implements MiddlewareInterface
             $this->policy->assertAllowed($userId, $this->adminOnly);
             return $handler->handle($request);
         } catch (Throwable $exception) {
-            return $this->responder->error(ErrorResponse::fromException($exception, (string) ($request->getAttribute('request_id') ?? 'unknown')));
+            $requestId = $request->getAttribute('request_id');
+            return $this->responder->error(ErrorResponse::fromException($exception, is_string($requestId) ? $requestId : 'unknown'));
         }
     }
 }

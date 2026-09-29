@@ -30,9 +30,10 @@ final readonly class AuthenticationMiddleware implements MiddlewareInterface
         $userId = $token === '' ? null : $this->tokens->verify($token);
 
         if ($userId === null) {
+            $requestId = $request->getAttribute('request_id');
             return $this->responder->error(ErrorResponse::fromException(
                 new UnauthorizedException('Authentication is required.'),
-                (string) ($request->getAttribute('request_id') ?? 'unknown'),
+                is_string($requestId) ? $requestId : 'unknown',
             ));
         }
 

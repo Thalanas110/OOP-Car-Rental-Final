@@ -115,6 +115,7 @@ final readonly class UserController
     /** @return array{request_id: string} */
     private function meta(ServerRequestInterface $request): array
     {
-        return ['request_id' => (string) ($request->getAttribute('request_id') ?? 'unknown')];
+        $requestId = $request->getAttribute('request_id');
+        return ['request_id' => is_string($requestId) ? $requestId : 'unknown'];
     }
 }
