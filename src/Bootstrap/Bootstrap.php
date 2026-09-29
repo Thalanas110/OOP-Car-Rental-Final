@@ -14,6 +14,7 @@ use App\Modules\Bookings\Domain\Service\BookingPolicy;
 use App\Modules\Fleet\Application\Port\CarRateReader;
 use App\Modules\Fleet\Domain\Repository\CarRepository;
 use App\Modules\Identity\Application\Port\VipStatusReader;
+use App\Modules\Identity\Application\Port\PasswordUpdater;
 use App\Modules\Identity\Application\Security\NativePasswordHasher;
 use App\Modules\Identity\Application\Security\OpaqueTokenIssuer;
 use App\Modules\Identity\Application\Security\PasswordHasher;
@@ -53,6 +54,7 @@ final class Bootstrap
             Clock::class => static fn (): Clock => new SystemClock(),
             TransactionManager::class => static fn (ContainerInterface $container): TransactionManager => new PdoTransactionManager($container->get(PDO::class)),
             AccountRepository::class => static fn (ContainerInterface $container): AccountRepository => new \App\Modules\Identity\Infrastructure\Persistence\PdoAccountRepository($container->get(PDO::class)),
+            PasswordUpdater::class => static fn (ContainerInterface $container): PasswordUpdater => new \App\Modules\Identity\Infrastructure\Persistence\PdoPasswordUpdater($container->get(PDO::class)),
             PasswordHasher::class => static fn (): PasswordHasher => new NativePasswordHasher(),
             TokenIssuer::class => static fn (ContainerInterface $container): TokenIssuer => $container->get(OpaqueTokenIssuer::class),
             TokenVerifier::class => static fn (ContainerInterface $container): TokenVerifier => $container->get(OpaqueTokenIssuer::class),

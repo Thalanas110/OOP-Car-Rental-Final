@@ -19,6 +19,7 @@ final class RouteCompositionTest extends TestCase
         $signatures = array_map(static fn ($route): string => implode(',', $route->getMethods()) . ' ' . $route->getPattern(), $routes);
 
         self::assertContains('POST /login', $signatures);
+        self::assertContains('PATCH /useraccount', $signatures);
         self::assertContains('POST /users', $signatures);
         self::assertContains('GET /cars', $signatures);
         self::assertContains('POST /carbooking', $signatures);

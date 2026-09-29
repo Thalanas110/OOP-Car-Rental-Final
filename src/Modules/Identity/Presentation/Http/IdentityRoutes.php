@@ -12,5 +12,6 @@ final class IdentityRoutes
     {
         $app->post('/login', [$controller, 'login']);
         $app->post('/useraccount', [$controller, 'register']);
+        $app->patch('/useraccount', [$controller, 'changePassword']);
     }
 }
