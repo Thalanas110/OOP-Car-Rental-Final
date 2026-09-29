@@ -36,6 +36,23 @@ paths:
       responses:
         '201': { $ref: '#/components/responses/Created' }
         '409': { $ref: '#/components/responses/Conflict' }
+    patch:
+      tags: [Identity]
+      security:
+        - bearerAuth: []
+        - legacyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_password]
+              properties:
+                user_password: { type: string, minLength: 8, format: password }
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
   /users:
     get:
       tags: [Users]
@@ -221,4 +238,3 @@ components:
     Conflict:
       description: Conflict
       content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
-
