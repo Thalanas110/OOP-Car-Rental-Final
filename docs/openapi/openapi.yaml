@@ -1,0 +1,224 @@
+openapi: 3.1.0
+info:
+  title: Car Rental API
+  version: 1.0.0
+  description: Domain-driven modular monolith API for vehicle rental, bookings, and billing.
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Identity
+  - name: Users
+  - name: Fleet
+  - name: Bookings
+  - name: Billing
+paths:
+  /login:
+    post:
+      tags: [Identity]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+      responses:
+        '200': { $ref: '#/components/responses/Success' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /useraccount:
+    post:
+      tags: [Identity]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RegisterAccountRequest' }
+      responses:
+        '201': { $ref: '#/components/responses/Created' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /users:
+    get:
+      tags: [Users]
+      responses: { '200': { $ref: '#/components/responses/Success' } }
+    post:
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserRequest' }
+      responses: { '201': { $ref: '#/components/responses/Created' } }
+  /users/{id}:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    get:
+      tags: [Users]
+      responses: { '200': { $ref: '#/components/responses/Success' }, '404': { $ref: '#/components/responses/NotFound' } }
+    patch:
+      tags: [Users]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/UserRequest' } } }
+      responses: { '200': { $ref: '#/components/responses/Success' } }
+    delete:
+      tags: [Users]
+      responses: { '200': { $ref: '#/components/responses/Success' } }
+  /destroyusers/{id}:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    delete:
+      tags: [Users]
+      responses: { '200': { $ref: '#/components/responses/Success' }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /cars:
+    get:
+      tags: [Fleet]
+      responses: { '200': { $ref: '#/components/responses/Success' } }
+    post:
+      tags: [Fleet]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/CarRequest' } } }
+      responses: { '201': { $ref: '#/components/responses/Created' } }
+  /cars/{id}:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    get:
+      tags: [Fleet]
+      responses: { '200': { $ref: '#/components/responses/Success' }, '404': { $ref: '#/components/responses/NotFound' } }
+    patch:
+      tags: [Fleet]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/CarUpdateRequest' } } }
+      responses: { '200': { $ref: '#/components/responses/Success' } }
+    delete:
+      tags: [Fleet]
+      responses: { '200': { $ref: '#/components/responses/Success' } }
+  /destroycars/{id}:
+    parameters: [{ $ref: '#/components/parameters/Id' }]
+    delete:
+      tags: [Fleet]
+      responses: { '200': { $ref: '#/components/responses/Success' }, '403': { $ref: '#/components/responses/Forbidden' } }
+  /carchecking:
+    get:
+      tags: [Fleet]
+      responses: { '200': { $ref: '#/components/responses/Success' } }
+  /carbooking:
+    post:
+      tags: [Bookings]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/BookingRequest' } } }
+      responses:
+        '201': { $ref: '#/components/responses/Created' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { $ref: '#/components/responses/Conflict' }
+  /billing:
+    post:
+      tags: [Billing]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/PaymentRequest' } } }
+      responses:
+        '201': { $ref: '#/components/responses/Created' }
+        '404': { $ref: '#/components/responses/NotFound' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    legacyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
+  schemas:
+    Envelope:
+      type: object
+      required: [data, error, meta]
+      properties:
+        data: { type: object, nullable: true, additionalProperties: true }
+        error:
+          type: object
+          nullable: true
+          properties:
+            code: { type: string }
+            message: { type: string }
+        meta:
+          type: object
+          properties: { request_id: { type: string } }
+    ErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/Envelope'
+    LoginRequest:
+      type: object
+      required: [user_email, user_password]
+      properties:
+        user_email: { type: string, format: email }
+        user_password: { type: string, format: password, minLength: 1 }
+    RegisterAccountRequest:
+      allOf:
+        - $ref: '#/components/schemas/LoginRequest'
+        - type: object
+          required: [userID]
+          properties: { userID: { type: integer, minimum: 1 } }
+    UserRequest:
+      type: object
+      required: [name, contact_no, drivers_license]
+      properties:
+        name: { type: string, minLength: 1 }
+        contact_no: { type: string, minLength: 1 }
+        drivers_license: { type: string, minLength: 1 }
+    CarRequest:
+      type: object
+      required: [car_brand, car_model, daily_rate, seating_capacity]
+      properties:
+        car_brand: { type: string }
+        car_model: { type: string }
+        manu_year: { type: string, nullable: true }
+        daily_rate: { type: string }
+        AC: { type: boolean }
+        seating_capacity: { type: integer, minimum: 1 }
+        plate_no: { type: string, nullable: true }
+    CarUpdateRequest:
+      type: object
+      required: [daily_rate]
+      properties:
+        daily_rate: { type: string }
+        plate_no: { type: string, nullable: true }
+    BookingRequest:
+      type: object
+      required: [carID, userID, book_date, return_date]
+      properties:
+        carID: { type: integer, minimum: 1 }
+        userID: { type: integer, minimum: 1 }
+        book_date: { type: string, format: date-time }
+        return_date: { type: string, format: date-time }
+    PaymentRequest:
+      type: object
+      required: [bookingID, amount_paid]
+      properties:
+        bookingID: { type: integer, minimum: 1 }
+        amount_paid: { type: string }
+  responses:
+    Success:
+      description: Successful response
+      content: { application/json: { schema: { $ref: '#/components/schemas/Envelope' } } }
+    Created:
+      description: Resource created
+      content: { application/json: { schema: { $ref: '#/components/schemas/Envelope' } } }
+    Unauthorized:
+      description: Authentication required
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+    Forbidden:
+      description: Authorization denied
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+    NotFound:
+      description: Resource not found
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+    Conflict:
+      description: Conflict
+      content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+
