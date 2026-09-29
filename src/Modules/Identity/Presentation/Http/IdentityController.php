@@ -6,9 +6,12 @@ namespace App\Modules\Identity\Presentation\Http;
 
 use App\Modules\Identity\Application\Command\Login;
 use App\Modules\Identity\Application\Command\LoginHandler;
+use App\Modules\Identity\Application\Command\ChangePassword;
+use App\Modules\Identity\Application\Command\ChangePasswordHandler;
 use App\Modules\Identity\Application\Command\RegisterAccount;
 use App\Modules\Identity\Application\Command\RegisterAccountHandler;
 use App\Shared\Domain\Exception\ValidationException;
+use App\Shared\Domain\ValueObject\UserId;
 use App\Shared\Presentation\Http\Response\JsonResponder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,6 +23,7 @@ final readonly class IdentityController
     public function __construct(
         private LoginHandler $loginHandler,
         private RegisterAccountHandler $registerAccountHandler,
+        private ?ChangePasswordHandler $changePasswordHandler = null,
         ?JsonResponder $responder = null,
     ) {
         $this->responder = $responder ?? new JsonResponder();
@@ -46,6 +50,18 @@ final readonly class IdentityController
         ));
 
         return $this->responder->success($view->toArray(), 201, $this->meta($request));
+    }
+
+    public function changePassword(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+        $userId = $request->getAttribute('authenticated_user_id');
+        if (!$userId instanceof UserId || $this->changePasswordHandler === null) {
+            throw new ValidationException('Authenticated user is required.');
+        }
+
+        $view = ($this->changePasswordHandler)(new ChangePassword($userId, $this->requiredString($this->body($request), 'user_password')));
+
+        return $this->responder->success($view->toArray(), 200, $this->meta($request));
     }
 
     /** @return array<string, mixed> */
