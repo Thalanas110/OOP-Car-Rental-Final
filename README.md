@@ -2,7 +2,9 @@
 
 This repository is a PHP 8.3+ domain-driven modular monolith for the car-rental API. The refactor preserves the existing API endpoint paths and HTTP methods while isolating business rules from HTTP and PDO concerns.
 
-Original work credit: the starting application was created by **@jeraldpangan**. This refactor preserves that API surface and credits the original author here as requested.
+## Original work and credit
+
+This project stands on the original implementation built by **@jeraldpangan** two years ago. Jerald carried the project from its beginning with the code that made this API real; this modular-monolith refactor is a continuation of that foundation, not a replacement of his contribution. His authorship and original work deserve full credit.
 
 ## Modules
 
