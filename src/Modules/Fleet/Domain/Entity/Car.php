@@ -36,16 +36,46 @@ final class Car
         return new self($id, $brand, $model, $manufactureYear, $dailyRate, $airConditioned, $seatingCapacity, $plateNumber, $archived);
     }
 
-    public function assignId(CarId $id): void { $this->id = $id; }
-    public function id(): ?CarId { return $this->id; }
-    public function brand(): string { return $this->brand; }
-    public function model(): string { return $this->model; }
-    public function manufactureYear(): ?string { return $this->manufactureYear; }
-    public function dailyRate(): Money { return $this->dailyRate; }
-    public function airConditioned(): bool { return $this->airConditioned; }
-    public function seatingCapacity(): int { return $this->seatingCapacity; }
-    public function plateNumber(): ?string { return $this->plateNumber; }
-    public function isArchived(): bool { return $this->archived; }
+    public function assignId(CarId $id): void
+    {
+        $this->id = $id;
+    }
+    public function id(): ?CarId
+    {
+        return $this->id;
+    }
+    public function brand(): string
+    {
+        return $this->brand;
+    }
+    public function model(): string
+    {
+        return $this->model;
+    }
+    public function manufactureYear(): ?string
+    {
+        return $this->manufactureYear;
+    }
+    public function dailyRate(): Money
+    {
+        return $this->dailyRate;
+    }
+    public function airConditioned(): bool
+    {
+        return $this->airConditioned;
+    }
+    public function seatingCapacity(): int
+    {
+        return $this->seatingCapacity;
+    }
+    public function plateNumber(): ?string
+    {
+        return $this->plateNumber;
+    }
+    public function isArchived(): bool
+    {
+        return $this->archived;
+    }
 
     public function updateRateAndPlate(Money $dailyRate, ?string $plateNumber): void
     {
@@ -53,7 +83,10 @@ final class Car
         $this->plateNumber = $plateNumber !== null ? trim($plateNumber) : null;
     }
 
-    public function archive(): void { $this->archived = true; }
+    public function archive(): void
+    {
+        $this->archived = true;
+    }
 
     public function isLuxury(Money $threshold): bool
     {

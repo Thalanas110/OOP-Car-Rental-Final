@@ -26,15 +26,30 @@ final class IdentityRoutesTest extends TestCase
     {
         $repository = new class implements AccountRepository {
             private Account $account;
-            public function __construct() { $this->account = Account::register(UserId::fromInt(7), Email::fromString('customer@example.com'), PasswordHash::fromString(password_hash('secret', PASSWORD_DEFAULT))); }
-            public function findByEmail(Email $email): ?Account { return $email->toString() === 'customer@example.com' ? $this->account : null; }
-            public function findByUserId(UserId $userId): ?Account { return $this->account; }
-            public function findUserIdByToken(string $token, DateTimeImmutable $now): ?UserId { return null; }
+            public function __construct()
+            {
+                $this->account = Account::register(UserId::fromInt(7), Email::fromString('customer@example.com'), PasswordHash::fromString(password_hash('secret', PASSWORD_DEFAULT)));
+            }
+            public function findByEmail(Email $email): ?Account
+            {
+                return $email->toString() === 'customer@example.com' ? $this->account : null;
+            }
+            public function findByUserId(UserId $userId): ?Account
+            {
+                return $this->account;
+            }
+            public function findUserIdByToken(string $token, DateTimeImmutable $now): ?UserId
+            {
+                return null;
+            }
             public function save(Account $account): void {}
             public function replaceToken(UserId $userId, string $token, DateTimeImmutable $expiresAt): void {}
         };
         $issuer = new class implements TokenIssuer {
-            public function issue(UserId $userId, Email $email): Token { return new Token('token-123', new DateTimeImmutable('2026-10-01 UTC')); }
+            public function issue(UserId $userId, Email $email): Token
+            {
+                return new Token('token-123', new DateTimeImmutable('2026-10-01 UTC'));
+            }
         };
         $controller = new IdentityController(
             new LoginHandler($repository, new NativePasswordHasher(), $issuer),

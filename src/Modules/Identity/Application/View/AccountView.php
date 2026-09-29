@@ -9,8 +9,7 @@ final readonly class AccountView
     public function __construct(
         public int $userId,
         public string $email,
-    ) {
-    }
+    ) {}
 
     /** @return array{user_id: int, email: string} */
     public function toArray(): array

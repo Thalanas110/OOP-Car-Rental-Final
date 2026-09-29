@@ -14,6 +14,6 @@ final readonly class ListUsersHandler
     /** @return list<UserView> */
     public function __invoke(): array
     {
-        return array_map(static fn ($user): UserView => UserView::fromEntity($user), $this->users->listActive());
+        return array_map(static fn($user): UserView => UserView::fromEntity($user), $this->users->listActive());
     }
 }

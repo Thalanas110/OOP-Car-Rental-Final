@@ -28,13 +28,13 @@ final readonly class FleetController
     public function list(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $includeLuxury = strtolower($request->getQueryParams()['include_luxury'] ?? 'false') === 'true';
-        $data = array_map(static fn ($view): array => $view->toArray(), ($this->listCars)(new ListCars($includeLuxury)));
+        $data = array_map(static fn($view): array => $view->toArray(), ($this->listCars)(new ListCars($includeLuxury)));
         return $this->responder->success($data, 200, $this->meta($request));
     }
 
     public function checking(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $data = array_map(static fn ($view): array => $view->toArray(), ($this->listCars)(new ListCars(false)));
+        $data = array_map(static fn($view): array => $view->toArray(), ($this->listCars)(new ListCars(false)));
         return $this->responder->success($data, 200, $this->meta($request));
     }
 
@@ -77,7 +77,9 @@ final readonly class FleetController
     private function body(ServerRequestInterface $request): array
     {
         $body = $request->getParsedBody();
-        if (!is_array($body)) { throw new ValidationException('Request body must be a JSON object.'); }
+        if (!is_array($body)) {
+            throw new ValidationException('Request body must be a JSON object.');
+        }
         return $body;
     }
 
@@ -85,7 +87,9 @@ final readonly class FleetController
     private function string(array $body, string $key): string
     {
         $value = $body[$key] ?? null;
-        if (!is_string($value) || trim($value) === '') { throw new ValidationException(sprintf('%s is required.', $key)); }
+        if (!is_string($value) || trim($value) === '') {
+            throw new ValidationException(sprintf('%s is required.', $key));
+        }
         return $value;
     }
 
@@ -100,14 +104,21 @@ final readonly class FleetController
     private function positiveInt(array $body, string $key): int
     {
         $value = $body[$key] ?? null;
-        if (!is_int($value) && !(is_string($value) && ctype_digit($value))) { throw new ValidationException(sprintf('%s must be a positive integer.', $key)); }
+        if (!is_int($value) && !(is_string($value) && ctype_digit($value))) {
+            throw new ValidationException(sprintf('%s must be a positive integer.', $key));
+        }
         $integer = (int) $value;
-        if ($integer < 1) { throw new ValidationException(sprintf('%s must be a positive integer.', $key)); }
+        if ($integer < 1) {
+            throw new ValidationException(sprintf('%s must be a positive integer.', $key));
+        }
         return $integer;
     }
 
     /** @param array<string, string> $args */
-    private function id(array $args): int { return $this->positiveInt($args, 'id'); }
+    private function id(array $args): int
+    {
+        return $this->positiveInt($args, 'id');
+    }
     /** @return array{request_id: string} */
     private function meta(ServerRequestInterface $request): array
     {

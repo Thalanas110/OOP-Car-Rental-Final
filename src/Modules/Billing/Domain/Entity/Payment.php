@@ -14,10 +14,18 @@ final readonly class Payment
 
     public static function record(BookingId $bookingId, Money $amount): self
     {
-        if ($amount->toMinorUnits() < 1) { throw new InvalidArgumentException('Payment amount must be positive.'); }
+        if ($amount->toMinorUnits() < 1) {
+            throw new InvalidArgumentException('Payment amount must be positive.');
+        }
         return new self($bookingId, $amount);
     }
 
-    public function bookingId(): BookingId { return $this->bookingId; }
-    public function amount(): Money { return $this->amount; }
+    public function bookingId(): BookingId
+    {
+        return $this->bookingId;
+    }
+    public function amount(): Money
+    {
+        return $this->amount;
+    }
 }

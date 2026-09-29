@@ -15,8 +15,7 @@ final readonly class ResponseEnvelope
         private ?array $data,
         private ?array $error,
         private array $meta,
-    ) {
-    }
+    ) {}
 
     /**
      * @param array<string, mixed>|list<mixed>|null $data

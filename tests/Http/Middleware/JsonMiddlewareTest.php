@@ -23,9 +23,7 @@ final class JsonMiddlewareTest extends TestCase
             ->withHeader('Content-Type', 'application/json')
             ->withBody(Stream::create('{"name":"Ada"}'));
         $handler = new class ($captured) implements RequestHandlerInterface {
-            public function __construct(private mixed &$captured)
-            {
-            }
+            public function __construct(private mixed &$captured) {}
 
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
@@ -38,9 +36,7 @@ final class JsonMiddlewareTest extends TestCase
         $response = (new RequestIdMiddleware())->process(
             $request,
             new class ($handler) implements RequestHandlerInterface {
-                public function __construct(private RequestHandlerInterface $handler)
-                {
-                }
+                public function __construct(private RequestHandlerInterface $handler) {}
 
                 public function handle(ServerRequestInterface $request): ResponseInterface
                 {

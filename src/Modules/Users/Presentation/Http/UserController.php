@@ -30,12 +30,11 @@ final readonly class UserController
         private ArchiveUserHandler $archiveUser,
         private DestroyUserHandler $destroyUser,
         private JsonResponder $responder,
-    ) {
-    }
+    ) {}
 
     public function list(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $data = array_map(static fn ($view): array => $view->toArray(), ($this->listUsers)());
+        $data = array_map(static fn($view): array => $view->toArray(), ($this->listUsers)());
 
         return $this->responder->success($data, 200, $this->meta($request));
     }

@@ -9,9 +9,7 @@ use DateTimeImmutable;
 
 final readonly class FrozenClock implements Clock
 {
-    public function __construct(private DateTimeImmutable $time)
-    {
-    }
+    public function __construct(private DateTimeImmutable $time) {}
 
     public function now(): DateTimeImmutable
     {

@@ -8,5 +8,8 @@ final readonly class TotalPaidView
 {
     public function __construct(public string $totalPaid) {}
     /** @return array{total_paid: string} */
-    public function toArray(): array { return ['total_paid' => $this->totalPaid]; }
+    public function toArray(): array
+    {
+        return ['total_paid' => $this->totalPaid];
+    }
 }

@@ -27,8 +27,14 @@ final class ChangePasswordHandlerTest extends TestCase
             }
         };
         $hasher = new class implements PasswordHasher {
-            public function hash(string $plainText): string { return 'hashed:' . $plainText; }
-            public function verify(string $plainText, string $hash): bool { return false; }
+            public function hash(string $plainText): string
+            {
+                return 'hashed:' . $plainText;
+            }
+            public function verify(string $plainText, string $hash): bool
+            {
+                return false;
+            }
         };
 
         $view = (new ChangePasswordHandler($updater, $hasher))(new ChangePassword(UserId::fromInt(7), 'new-secret'));

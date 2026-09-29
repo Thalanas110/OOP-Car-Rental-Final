@@ -17,8 +17,7 @@ final readonly class LoginHandler
         private AccountRepository $accounts,
         private PasswordHasher $passwords,
         private TokenIssuer $tokens,
-    ) {
-    }
+    ) {}
 
     public function __invoke(Login $command): LoginView
     {

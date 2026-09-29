@@ -10,6 +10,5 @@ final readonly class RegisterAccount
         public int $userId,
         public string $email,
         public string $password,
-    ) {
-    }
+    ) {}
 }

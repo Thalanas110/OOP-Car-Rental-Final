@@ -18,8 +18,7 @@ final readonly class RegisterAccountHandler
     public function __construct(
         private AccountRepository $accounts,
         private PasswordHasher $passwords,
-    ) {
-    }
+    ) {}
 
     public function __invoke(RegisterAccount $command): AccountView
     {

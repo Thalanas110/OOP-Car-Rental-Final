@@ -20,7 +20,10 @@ final class AuthorizationMiddlewareTest extends TestCase
     public function testRejectsUnauthenticatedProtectedRequest(): void
     {
         $response = (new AuthorizationMiddleware(new AuthorizationPolicy(), new JsonResponder()))->process(new ServerRequest('POST', '/cars'), new class implements RequestHandlerInterface {
-            public function handle(ServerRequestInterface $request): ResponseInterface { return new Response(200); }
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
+                return new Response(200);
+            }
         });
 
         self::assertSame(401, $response->getStatusCode());
@@ -30,7 +33,10 @@ final class AuthorizationMiddlewareTest extends TestCase
     {
         $request = (new ServerRequest('DELETE', '/destroycars/1'))->withAttribute('authenticated_user_id', UserId::fromInt(1));
         $response = (new AuthorizationMiddleware(new AuthorizationPolicy(adminUserId: 1), new JsonResponder(), adminOnly: true))->process($request, new class implements RequestHandlerInterface {
-            public function handle(ServerRequestInterface $request): ResponseInterface { return new Response(200); }
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
+                return new Response(200);
+            }
         });
 
         self::assertSame(200, $response->getStatusCode());
@@ -40,7 +46,10 @@ final class AuthorizationMiddlewareTest extends TestCase
     {
         $request = (new ServerRequest('DELETE', '/destroycars/1'))->withAttribute('authenticated_user_id', UserId::fromInt(7));
         $response = (new AuthorizationMiddleware(new AuthorizationPolicy(adminUserId: 1), new JsonResponder(), adminOnly: true))->process($request, new class implements RequestHandlerInterface {
-            public function handle(ServerRequestInterface $request): ResponseInterface { return new Response(200); }
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
+                return new Response(200);
+            }
         });
 
         self::assertSame(403, $response->getStatusCode());

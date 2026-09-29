@@ -18,11 +18,17 @@ final readonly class BillingController
     public function create(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $body = $request->getParsedBody();
-        if (!is_array($body)) { throw new ValidationException('Request body must be a JSON object.'); }
+        if (!is_array($body)) {
+            throw new ValidationException('Request body must be a JSON object.');
+        }
         $bookingId = $body['bookingID'] ?? null;
         $amount = $body['amount_paid'] ?? null;
-        if ((!is_int($bookingId) && !(is_string($bookingId) && ctype_digit($bookingId))) || (int) $bookingId < 1) { throw new ValidationException('bookingID must be a positive integer.'); }
-        if (!is_string($amount) || trim($amount) === '') { throw new ValidationException('amount_paid is required.'); }
+        if ((!is_int($bookingId) && !(is_string($bookingId) && ctype_digit($bookingId))) || (int) $bookingId < 1) {
+            throw new ValidationException('bookingID must be a positive integer.');
+        }
+        if (!is_string($amount) || trim($amount) === '') {
+            throw new ValidationException('amount_paid is required.');
+        }
         $view = ($this->recordPayment)(new RecordPayment((int) $bookingId, $amount));
         $requestId = $request->getAttribute('request_id');
         return $this->responder->success($view->toArray(), 201, ['request_id' => is_string($requestId) ? $requestId : 'unknown']);

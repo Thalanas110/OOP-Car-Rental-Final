@@ -32,12 +32,30 @@ final class User
         return new self($id, $name, $contactNumber, $license, $archived);
     }
 
-    public function assignId(UserId $id): void { $this->id = $id; }
-    public function id(): ?UserId { return $this->id; }
-    public function name(): string { return $this->name; }
-    public function contactNumber(): string { return $this->contactNumber; }
-    public function driversLicense(): DriverLicense { return $this->driversLicense; }
-    public function isArchived(): bool { return $this->archived; }
+    public function assignId(UserId $id): void
+    {
+        $this->id = $id;
+    }
+    public function id(): ?UserId
+    {
+        return $this->id;
+    }
+    public function name(): string
+    {
+        return $this->name;
+    }
+    public function contactNumber(): string
+    {
+        return $this->contactNumber;
+    }
+    public function driversLicense(): DriverLicense
+    {
+        return $this->driversLicense;
+    }
+    public function isArchived(): bool
+    {
+        return $this->archived;
+    }
 
     public function updateProfile(string $name, string $contactNumber, DriverLicense $driversLicense): void
     {

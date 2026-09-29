@@ -13,8 +13,7 @@ final readonly class LoginView
         public string $email,
         public string $token,
         public DateTimeImmutable $expiresAt,
-    ) {
-    }
+    ) {}
 
     /** @return array{user_id: int, username: string, token: string, expires_at: string} */
     public function toArray(): array

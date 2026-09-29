@@ -9,5 +9,8 @@ final readonly class PasswordChangedView
     public function __construct(public string $message) {}
 
     /** @return array{message: string} */
-    public function toArray(): array { return ['message' => $this->message]; }
+    public function toArray(): array
+    {
+        return ['message' => $this->message];
+    }
 }

@@ -11,5 +11,8 @@ use App\Shared\Domain\ValueObject\CarId;
 final readonly class ArchiveCarHandler
 {
     public function __construct(private CarRepository $cars) {}
-    public function __invoke(ArchiveCar $command): void { $this->cars->archive(CarId::fromInt($command->carId)); }
+    public function __invoke(ArchiveCar $command): void
+    {
+        $this->cars->archive(CarId::fromInt($command->carId));
+    }
 }

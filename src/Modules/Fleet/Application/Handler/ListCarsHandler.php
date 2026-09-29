@@ -14,6 +14,6 @@ final readonly class ListCarsHandler
     /** @return list<CarView> */
     public function __invoke(ListCars $query): array
     {
-        return array_map(static fn ($car): CarView => CarView::fromEntity($car), $this->cars->listActive($query->includeLuxury));
+        return array_map(static fn($car): CarView => CarView::fromEntity($car), $this->cars->listActive($query->includeLuxury));
     }
 }

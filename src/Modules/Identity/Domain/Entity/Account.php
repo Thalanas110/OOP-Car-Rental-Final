@@ -14,8 +14,7 @@ final readonly class Account
         private UserId $userId,
         private Email $email,
         private PasswordHash $passwordHash,
-    ) {
-    }
+    ) {}
 
     public static function register(UserId $userId, Email $email, PasswordHash $passwordHash): self
     {

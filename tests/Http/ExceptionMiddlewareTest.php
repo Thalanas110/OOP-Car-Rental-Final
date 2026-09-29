@@ -20,7 +20,10 @@ final class ExceptionMiddlewareTest extends TestCase
     {
         $request = (new ServerRequest('GET', '/cars'))->withAttribute('request_id', 'req-1');
         $response = (new ExceptionMiddleware(new JsonResponder()))->process($request, new class implements RequestHandlerInterface {
-            public function handle(ServerRequestInterface $request): ResponseInterface { throw new ConflictException('Overlap.'); }
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
+                throw new ConflictException('Overlap.');
+            }
         });
         $payload = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 
@@ -32,7 +35,10 @@ final class ExceptionMiddlewareTest extends TestCase
     public function testHidesUnexpectedExceptionMessage(): void
     {
         $response = (new ExceptionMiddleware(new JsonResponder()))->process(new ServerRequest('GET', '/cars'), new class implements RequestHandlerInterface {
-            public function handle(ServerRequestInterface $request): ResponseInterface { throw new \RuntimeException('database password'); }
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
+                throw new \RuntimeException('database password');
+            }
         });
         $payload = json_decode((string) $response->getBody(), true, 512, JSON_THROW_ON_ERROR);
 

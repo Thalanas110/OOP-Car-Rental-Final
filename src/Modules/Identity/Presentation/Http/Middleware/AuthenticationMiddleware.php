@@ -18,8 +18,7 @@ final readonly class AuthenticationMiddleware implements MiddlewareInterface
     public function __construct(
         private TokenVerifier $tokens,
         private JsonResponder $responder,
-    ) {
-    }
+    ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

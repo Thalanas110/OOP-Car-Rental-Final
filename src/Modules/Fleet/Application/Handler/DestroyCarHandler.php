@@ -11,5 +11,8 @@ use App\Shared\Domain\ValueObject\CarId;
 final readonly class DestroyCarHandler
 {
     public function __construct(private CarRepository $cars) {}
-    public function __invoke(DestroyCar $command): void { $this->cars->delete(CarId::fromInt($command->carId)); }
+    public function __invoke(DestroyCar $command): void
+    {
+        $this->cars->delete(CarId::fromInt($command->carId));
+    }
 }

@@ -27,6 +27,6 @@ final class ClockTest extends TestCase
             }
         };
 
-        self::assertSame('completed', $manager->run(static fn (): string => 'completed'));
+        self::assertSame('completed', $manager->run(static fn(): string => 'completed'));
     }
 }

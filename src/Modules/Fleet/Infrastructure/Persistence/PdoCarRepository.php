@@ -12,9 +12,7 @@ use PDO;
 
 final readonly class PdoCarRepository implements CarRepository
 {
-    public function __construct(private PDO $pdo, private Money $luxuryThreshold)
-    {
-    }
+    public function __construct(private PDO $pdo, private Money $luxuryThreshold) {}
 
     public function find(CarId $id): ?Car
     {
@@ -36,7 +34,7 @@ final readonly class PdoCarRepository implements CarRepository
         $statement = $this->pdo->prepare($sql);
         $statement->execute($parameters);
 
-        return array_values(array_filter(array_map(fn (array $row): ?Car => $this->hydrate($row), $statement->fetchAll())));
+        return array_values(array_filter(array_map(fn(array $row): ?Car => $this->hydrate($row), $statement->fetchAll())));
     }
 
     public function save(Car $car): Car
@@ -80,8 +78,15 @@ final readonly class PdoCarRepository implements CarRepository
         }
 
         return Car::reconstitute(
-            CarId::fromInt($this->intValue($row, 'carID')), $this->stringValue($row, 'car_brand'), $this->stringValue($row, 'car_model'), $this->nullableStringValue($row, 'manu_year'),
-            Money::fromDecimal($this->stringValue($row, 'daily_rate')), $this->boolValue($row, 'AC'), $this->intValue($row, 'seating_capacity'), $this->nullableStringValue($row, 'plate_no'), $this->boolValue($row, 'isdeleted'),
+            CarId::fromInt($this->intValue($row, 'carID')),
+            $this->stringValue($row, 'car_brand'),
+            $this->stringValue($row, 'car_model'),
+            $this->nullableStringValue($row, 'manu_year'),
+            Money::fromDecimal($this->stringValue($row, 'daily_rate')),
+            $this->boolValue($row, 'AC'),
+            $this->intValue($row, 'seating_capacity'),
+            $this->nullableStringValue($row, 'plate_no'),
+            $this->boolValue($row, 'isdeleted'),
         );
     }
 

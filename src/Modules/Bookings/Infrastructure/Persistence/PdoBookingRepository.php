@@ -41,7 +41,9 @@ final readonly class PdoBookingRepository implements BookingRepository
         $statement = $this->pdo->prepare('SELECT bookingID, carID, userID, daily_rate, book_date, return_date, total_cost FROM bookingtable WHERE bookingID = :id LIMIT 1');
         $statement->execute(['id' => $id->toInt()]);
         $row = $statement->fetch();
-        if (!is_array($row)) { return null; }
+        if (!is_array($row)) {
+            return null;
+        }
         return Booking::reconstitute(BookingId::fromInt($this->intValue($row, 'bookingID')), CarId::fromInt($this->intValue($row, 'carID')), UserId::fromInt($this->intValue($row, 'userID')), DateRange::between(new DateTimeImmutable($this->stringValue($row, 'book_date')), new DateTimeImmutable($this->stringValue($row, 'return_date'))), Money::fromDecimal($this->stringValue($row, 'daily_rate')), Money::fromDecimal($this->stringValue($row, 'total_cost')));
     }
 

@@ -12,9 +12,7 @@ use PDO;
 
 final readonly class PdoUserRepository implements UserRepository
 {
-    public function __construct(private PDO $pdo)
-    {
-    }
+    public function __construct(private PDO $pdo) {}
 
     public function find(UserId $id): ?User
     {
@@ -32,7 +30,7 @@ final readonly class PdoUserRepository implements UserRepository
         }
         $rows = $statement->fetchAll();
 
-        return array_values(array_filter(array_map(fn (array $row): ?User => $this->hydrate($row), $rows)));
+        return array_values(array_filter(array_map(fn(array $row): ?User => $this->hydrate($row), $rows)));
     }
 
     public function existsByDriverLicense(DriverLicense $license): bool

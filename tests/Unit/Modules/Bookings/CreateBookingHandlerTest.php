@@ -24,14 +24,43 @@ final class CreateBookingHandlerTest extends TestCase
     public function testCreatesBookingThroughPortsAndTransaction(): void
     {
         $bookings = new class implements BookingRepository {
-            public function hasOverlap(CarId $carId, \App\Shared\Domain\ValueObject\DateRange $dateRange): bool { return false; }
-            public function save(\App\Modules\Bookings\Domain\Entity\Booking $booking): \App\Modules\Bookings\Domain\Entity\Booking { return \App\Modules\Bookings\Domain\Entity\Booking::reconstitute(BookingId::fromInt(22), $booking->carId(), $booking->userId(), $booking->dateRange(), $booking->dailyRate(), $booking->totalCost()); }
-            public function find(BookingId $id): ?\App\Modules\Bookings\Domain\Entity\Booking { return null; }
+            public function hasOverlap(CarId $carId, \App\Shared\Domain\ValueObject\DateRange $dateRange): bool
+            {
+                return false;
+            }
+            public function save(\App\Modules\Bookings\Domain\Entity\Booking $booking): \App\Modules\Bookings\Domain\Entity\Booking
+            {
+                return \App\Modules\Bookings\Domain\Entity\Booking::reconstitute(BookingId::fromInt(22), $booking->carId(), $booking->userId(), $booking->dateRange(), $booking->dailyRate(), $booking->totalCost());
+            }
+            public function find(BookingId $id): ?\App\Modules\Bookings\Domain\Entity\Booking
+            {
+                return null;
+            }
         };
-        $users = new class implements UserExistenceReader { public function exists(UserId $userId): bool { return true; } };
-        $cars = new class implements CarRateReader { public function rateFor(CarId $carId): ?Money { return Money::fromDecimal('1500.00'); } };
-        $vip = new class implements VipStatusReader { public function isVip(UserId $userId): bool { return false; } };
-        $transactions = new class implements TransactionManager { public function run(callable $operation): mixed { return $operation(); } };
+        $users = new class implements UserExistenceReader {
+            public function exists(UserId $userId): bool
+            {
+                return true;
+            }
+        };
+        $cars = new class implements CarRateReader {
+            public function rateFor(CarId $carId): ?Money
+            {
+                return Money::fromDecimal('1500.00');
+            }
+        };
+        $vip = new class implements VipStatusReader {
+            public function isVip(UserId $userId): bool
+            {
+                return false;
+            }
+        };
+        $transactions = new class implements TransactionManager {
+            public function run(callable $operation): mixed
+            {
+                return $operation();
+            }
+        };
 
         $view = (new CreateBookingHandler($bookings, $users, $cars, $vip, new BookingPolicy(), $transactions, Money::fromDecimal('200000.00')))(new CreateBooking(2, 7, '2026-10-01', '2026-10-04'));
 

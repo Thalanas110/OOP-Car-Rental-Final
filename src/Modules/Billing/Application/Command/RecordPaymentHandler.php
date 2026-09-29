@@ -21,15 +21,21 @@ final readonly class RecordPaymentHandler
     public function __invoke(RecordPayment $command): PaymentView
     {
         $bookingId = BookingId::fromInt($command->bookingId);
-        if (!$this->payments->bookingExists($bookingId)) { throw new NotFoundException('Booking was not found.'); }
+        if (!$this->payments->bookingExists($bookingId)) {
+            throw new NotFoundException('Booking was not found.');
+        }
         $userId = $this->payments->userIdForBooking($bookingId);
-        if ($userId === null) { throw new NotFoundException('Booking owner was not found.'); }
+        if ($userId === null) {
+            throw new NotFoundException('Booking owner was not found.');
+        }
         $payment = Payment::record($bookingId, Money::fromDecimal($command->amount));
 
         return $this->transactions->run(function () use ($payment, $userId): PaymentView {
             $saved = $this->payments->save($payment);
             $points = $this->vipAccounts->addPoints($userId, $saved->amount());
-            if ($this->vipPolicy->hasAccess($points)) { $this->vipAccounts->grantAccess($userId); }
+            if ($this->vipPolicy->hasAccess($points)) {
+                $this->vipAccounts->grantAccess($userId);
+            }
             return PaymentView::fromEntity($saved);
         });
     }

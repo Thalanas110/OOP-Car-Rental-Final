@@ -14,8 +14,7 @@ final readonly class UserView
         public string $contactNumber,
         public string $driversLicense,
         public bool $archived,
-    ) {
-    }
+    ) {}
 
     public static function fromEntity(User $user): self
     {

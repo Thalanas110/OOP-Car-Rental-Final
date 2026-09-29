@@ -24,13 +24,35 @@ final class BillingRoutesTest extends TestCase
     public function testRecordsPaymentFromLegacyPayload(): void
     {
         $repository = new class implements PaymentRepository {
-            public function bookingExists(BookingId $bookingId): bool { return true; }
-            public function userIdForBooking(BookingId $bookingId): ?UserId { return UserId::fromInt(7); }
-            public function save(Payment $payment): Payment { return $payment; }
-            public function totalPaidForUser(UserId $userId): Money { return Money::fromDecimal('3000.00'); }
+            public function bookingExists(BookingId $bookingId): bool
+            {
+                return true;
+            }
+            public function userIdForBooking(BookingId $bookingId): ?UserId
+            {
+                return UserId::fromInt(7);
+            }
+            public function save(Payment $payment): Payment
+            {
+                return $payment;
+            }
+            public function totalPaidForUser(UserId $userId): Money
+            {
+                return Money::fromDecimal('3000.00');
+            }
         };
-        $vip = new class implements VipAccountPort { public function addPoints(UserId $userId, Money $amount): Money { return $amount; } public function grantAccess(UserId $userId): void {} };
-        $transactions = new class implements TransactionManager { public function run(callable $operation): mixed { return $operation(); } };
+        $vip = new class implements VipAccountPort {
+            public function addPoints(UserId $userId, Money $amount): Money
+            {
+                return $amount;
+            } public function grantAccess(UserId $userId): void {}
+        };
+        $transactions = new class implements TransactionManager {
+            public function run(callable $operation): mixed
+            {
+                return $operation();
+            }
+        };
         $controller = new BillingController(new RecordPaymentHandler($repository, $vip, new VipPolicy(Money::fromDecimal('500000.00')), $transactions), new JsonResponder());
 
         $response = $controller->create((new ServerRequest('POST', '/billing'))->withParsedBody(['bookingID' => 12, 'amount_paid' => '3000.00']), new Response());

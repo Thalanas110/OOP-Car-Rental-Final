@@ -28,7 +28,11 @@ final class LegacyRouteAdapterTest extends TestCase
         $request = (new ServerRequest('GET', '/routes.php'))->withQueryParams(['request' => 'users/8']);
         $handler = new class ($captured) implements RequestHandlerInterface {
             public function __construct(private mixed &$captured) {}
-            public function handle(ServerRequestInterface $request): ResponseInterface { $this->captured = $request->getUri()->getPath(); return new Response(200); }
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
+                $this->captured = $request->getUri()->getPath();
+                return new Response(200);
+            }
         };
 
         $response = (new LegacyRouteAdapter())->process($request, $handler);

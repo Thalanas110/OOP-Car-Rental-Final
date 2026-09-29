@@ -20,13 +20,19 @@ final class IdentityAuthenticationMiddlewareTest extends TestCase
     public function testRejectsMissingCredentials(): void
     {
         $verifier = new class implements TokenVerifier {
-            public function verify(string $token): ?UserId { return null; }
+            public function verify(string $token): ?UserId
+            {
+                return null;
+            }
         };
 
         $response = (new AuthenticationMiddleware($verifier, new JsonResponder()))->process(
             new ServerRequest('GET', '/cars'),
             new class implements RequestHandlerInterface {
-                public function handle(ServerRequestInterface $request): ResponseInterface { return new Response(200); }
+                public function handle(ServerRequestInterface $request): ResponseInterface
+                {
+                    return new Response(200);
+                }
             },
         );
 
@@ -73,7 +79,10 @@ final class IdentityAuthenticationMiddlewareTest extends TestCase
         $response = (new AuthenticationMiddleware($verifier, new JsonResponder()))->process(
             (new ServerRequest('GET', '/cars'))->withHeader('Authorization', 'legacy-token')->withHeader('X-Auth-User', 'customer@example.com'),
             new class implements RequestHandlerInterface {
-                public function handle(ServerRequestInterface $request): ResponseInterface { return new Response(200); }
+                public function handle(ServerRequestInterface $request): ResponseInterface
+                {
+                    return new Response(200);
+                }
             },
         );
 

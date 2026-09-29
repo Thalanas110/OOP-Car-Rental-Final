@@ -16,7 +16,9 @@ final readonly class GetCarHandler
     public function __invoke(GetCar $query): CarView
     {
         $car = $this->cars->find(CarId::fromInt($query->carId));
-        if ($car === null) { throw new NotFoundException('Car was not found.'); }
+        if ($car === null) {
+            throw new NotFoundException('Car was not found.');
+        }
         return CarView::fromEntity($car);
     }
 }

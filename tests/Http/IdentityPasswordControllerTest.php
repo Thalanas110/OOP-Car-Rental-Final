@@ -28,17 +28,32 @@ final class IdentityPasswordControllerTest extends TestCase
     {
         $updater = new class implements PasswordUpdater {
             public ?UserId $userId = null;
-            public function update(UserId $userId, \App\Modules\Identity\Domain\ValueObject\PasswordHash $password): void { $this->userId = $userId; }
+            public function update(UserId $userId, \App\Modules\Identity\Domain\ValueObject\PasswordHash $password): void
+            {
+                $this->userId = $userId;
+            }
         };
         $repository = new class implements AccountRepository {
-            public function findByEmail(Email $email): ?Account { return null; }
-            public function findByUserId(UserId $userId): ?Account { return null; }
-            public function findUserIdByToken(string $token, DateTimeImmutable $now): ?UserId { return null; }
+            public function findByEmail(Email $email): ?Account
+            {
+                return null;
+            }
+            public function findByUserId(UserId $userId): ?Account
+            {
+                return null;
+            }
+            public function findUserIdByToken(string $token, DateTimeImmutable $now): ?UserId
+            {
+                return null;
+            }
             public function save(Account $account): void {}
             public function replaceToken(UserId $userId, string $token, DateTimeImmutable $expiresAt): void {}
         };
         $issuer = new class implements TokenIssuer {
-            public function issue(UserId $userId, Email $email): Token { return new Token('unused', new DateTimeImmutable('2030-01-01 UTC')); }
+            public function issue(UserId $userId, Email $email): Token
+            {
+                return new Token('unused', new DateTimeImmutable('2030-01-01 UTC'));
+            }
         };
         $controller = new IdentityController(
             new LoginHandler($repository, new NativePasswordHasher(), $issuer),

@@ -34,9 +34,18 @@ final class SecurityTest extends TestCase
             public ?string $token = null;
             public ?DateTimeImmutable $expiresAt = null;
 
-            public function findByEmail(Email $email): ?Account { return null; }
-            public function findByUserId(UserId $userId): ?Account { return null; }
-            public function findUserIdByToken(string $token, DateTimeImmutable $now): ?UserId { return null; }
+            public function findByEmail(Email $email): ?Account
+            {
+                return null;
+            }
+            public function findByUserId(UserId $userId): ?Account
+            {
+                return null;
+            }
+            public function findUserIdByToken(string $token, DateTimeImmutable $now): ?UserId
+            {
+                return null;
+            }
             public function save(Account $account): void {}
             public function replaceToken(UserId $userId, string $token, DateTimeImmutable $expiresAt): void
             {

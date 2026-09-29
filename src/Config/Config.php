@@ -15,8 +15,7 @@ final readonly class Config
         private int $tokenTtl,
         private string $luxuryCarDailyRate,
         private string $vipPointsThreshold,
-    ) {
-    }
+    ) {}
 
     /** @param array<string, string> $environment */
     public static function fromEnvironment(array $environment): self

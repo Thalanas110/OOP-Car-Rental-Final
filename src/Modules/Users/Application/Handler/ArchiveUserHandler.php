@@ -11,5 +11,8 @@ use App\Shared\Domain\ValueObject\UserId;
 final readonly class ArchiveUserHandler
 {
     public function __construct(private UserRepository $users) {}
-    public function __invoke(ArchiveUser $command): void { $this->users->archive(UserId::fromInt($command->userId)); }
+    public function __invoke(ArchiveUser $command): void
+    {
+        $this->users->archive(UserId::fromInt($command->userId));
+    }
 }

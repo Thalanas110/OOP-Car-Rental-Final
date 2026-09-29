@@ -25,18 +25,36 @@ final class LoginHandlerTest extends TestCase
         $account = Account::register(UserId::fromInt(7), Email::fromString('customer@example.com'), PasswordHash::fromString('stored'));
         $repository = new class ($account) implements AccountRepository {
             public function __construct(private Account $account) {}
-            public function findByEmail(Email $email): ?Account { return $this->account; }
-            public function findByUserId(UserId $userId): ?Account { return $this->account; }
-            public function findUserIdByToken(string $token, DateTimeImmutable $now): ?UserId { return null; }
+            public function findByEmail(Email $email): ?Account
+            {
+                return $this->account;
+            }
+            public function findByUserId(UserId $userId): ?Account
+            {
+                return $this->account;
+            }
+            public function findUserIdByToken(string $token, DateTimeImmutable $now): ?UserId
+            {
+                return null;
+            }
             public function save(Account $account): void {}
             public function replaceToken(UserId $userId, string $token, DateTimeImmutable $expiresAt): void {}
         };
         $hasher = new class implements PasswordHasher {
-            public function hash(string $plainText): string { return 'stored'; }
-            public function verify(string $plainText, string $hash): bool { return $plainText === 'secret' && $hash === 'stored'; }
+            public function hash(string $plainText): string
+            {
+                return 'stored';
+            }
+            public function verify(string $plainText, string $hash): bool
+            {
+                return $plainText === 'secret' && $hash === 'stored';
+            }
         };
         $issuer = new class implements TokenIssuer {
-            public function issue(UserId $userId, Email $email): Token { return new Token('token-123', new DateTimeImmutable('2026-10-01 UTC')); }
+            public function issue(UserId $userId, Email $email): Token
+            {
+                return new Token('token-123', new DateTimeImmutable('2026-10-01 UTC'));
+            }
         };
 
         $view = (new LoginHandler($repository, $hasher, $issuer))(new Login('customer@example.com', 'secret'));
@@ -48,18 +66,36 @@ final class LoginHandlerTest extends TestCase
     public function testRejectsUnknownOrIncorrectCredentialsWithSameException(): void
     {
         $repository = new class implements AccountRepository {
-            public function findByEmail(Email $email): ?Account { return null; }
-            public function findByUserId(UserId $userId): ?Account { return null; }
-            public function findUserIdByToken(string $token, DateTimeImmutable $now): ?UserId { return null; }
+            public function findByEmail(Email $email): ?Account
+            {
+                return null;
+            }
+            public function findByUserId(UserId $userId): ?Account
+            {
+                return null;
+            }
+            public function findUserIdByToken(string $token, DateTimeImmutable $now): ?UserId
+            {
+                return null;
+            }
             public function save(Account $account): void {}
             public function replaceToken(UserId $userId, string $token, DateTimeImmutable $expiresAt): void {}
         };
         $hasher = new class implements PasswordHasher {
-            public function hash(string $plainText): string { return 'hash'; }
-            public function verify(string $plainText, string $hash): bool { return false; }
+            public function hash(string $plainText): string
+            {
+                return 'hash';
+            }
+            public function verify(string $plainText, string $hash): bool
+            {
+                return false;
+            }
         };
         $issuer = new class implements TokenIssuer {
-            public function issue(UserId $userId, Email $email): Token { return new Token('token', new DateTimeImmutable()); }
+            public function issue(UserId $userId, Email $email): Token
+            {
+                return new Token('token', new DateTimeImmutable());
+            }
         };
 
         try {

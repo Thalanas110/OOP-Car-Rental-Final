@@ -14,7 +14,11 @@ final readonly class AuthorizationPolicy
 
     public function assertAllowed(?UserId $userId, bool $adminOnly = false): void
     {
-        if ($userId === null) { throw new UnauthorizedException('Authentication is required.'); }
-        if ($adminOnly && $userId->toInt() !== $this->adminUserId) { throw new ForbiddenException('Administrator access is required.'); }
+        if ($userId === null) {
+            throw new UnauthorizedException('Authentication is required.');
+        }
+        if ($adminOnly && $userId->toInt() !== $this->adminUserId) {
+            throw new ForbiddenException('Administrator access is required.');
+        }
     }
 }

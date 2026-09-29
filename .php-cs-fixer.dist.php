@@ -10,7 +10,6 @@ return (new PhpCsFixer\Config())
     ->setRiskyAllowed(false)
     ->setRules([
         '@PER-CS2.0' => true,
-        'declare_strict_types' => true,
         'phpdoc_align' => false,
         'single_line_throw' => false,
     ])

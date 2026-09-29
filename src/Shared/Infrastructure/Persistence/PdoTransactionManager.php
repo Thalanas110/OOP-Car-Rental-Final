@@ -10,9 +10,7 @@ use Throwable;
 
 final readonly class PdoTransactionManager implements TransactionManager
 {
-    public function __construct(private PDO $pdo)
-    {
-    }
+    public function __construct(private PDO $pdo) {}
 
     public function run(callable $operation): mixed
     {

@@ -16,8 +16,7 @@ final readonly class OpaqueTokenIssuer implements TokenIssuer, TokenVerifier
         private AccountRepository $accounts,
         private Clock $clock,
         private Config $config,
-    ) {
-    }
+    ) {}
 
     public function issue(UserId $userId, Email $email): Token
     {

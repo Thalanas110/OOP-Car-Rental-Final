@@ -11,5 +11,8 @@ use App\Shared\Domain\ValueObject\UserId;
 final readonly class GetTotalPaidHandler
 {
     public function __construct(private PaymentRepository $payments) {}
-    public function __invoke(GetTotalPaid $query): TotalPaidView { return new TotalPaidView($this->payments->totalPaidForUser(UserId::fromInt($query->userId))->toDecimal()); }
+    public function __invoke(GetTotalPaid $query): TotalPaidView
+    {
+        return new TotalPaidView($this->payments->totalPaidForUser(UserId::fromInt($query->userId))->toDecimal());
+    }
 }

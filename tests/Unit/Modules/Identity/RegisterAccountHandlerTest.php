@@ -20,15 +20,33 @@ final class RegisterAccountHandlerTest extends TestCase
     {
         $repository = new class implements AccountRepository {
             public ?Account $saved = null;
-            public function findByEmail(Email $email): ?Account { return null; }
-            public function findByUserId(UserId $userId): ?Account { return null; }
-            public function findUserIdByToken(string $token, \DateTimeImmutable $now): ?UserId { return null; }
-            public function save(Account $account): void { $this->saved = $account; }
+            public function findByEmail(Email $email): ?Account
+            {
+                return null;
+            }
+            public function findByUserId(UserId $userId): ?Account
+            {
+                return null;
+            }
+            public function findUserIdByToken(string $token, \DateTimeImmutable $now): ?UserId
+            {
+                return null;
+            }
+            public function save(Account $account): void
+            {
+                $this->saved = $account;
+            }
             public function replaceToken(UserId $userId, string $token, \DateTimeImmutable $expiresAt): void {}
         };
         $hasher = new class implements PasswordHasher {
-            public function hash(string $plainText): string { return 'hashed:' . $plainText; }
-            public function verify(string $plainText, string $hash): bool { return false; }
+            public function hash(string $plainText): string
+            {
+                return 'hashed:' . $plainText;
+            }
+            public function verify(string $plainText, string $hash): bool
+            {
+                return false;
+            }
         };
         $handler = new RegisterAccountHandler($repository, $hasher);
 
@@ -45,15 +63,30 @@ final class RegisterAccountHandlerTest extends TestCase
         $existing = Account::register(UserId::fromInt(7), Email::fromString('customer@example.com'), \App\Modules\Identity\Domain\ValueObject\PasswordHash::fromString('hash'));
         $repository = new class ($existing) implements AccountRepository {
             public function __construct(private Account $existing) {}
-            public function findByEmail(Email $email): ?Account { return $this->existing; }
-            public function findByUserId(UserId $userId): ?Account { return null; }
-            public function findUserIdByToken(string $token, \DateTimeImmutable $now): ?UserId { return null; }
+            public function findByEmail(Email $email): ?Account
+            {
+                return $this->existing;
+            }
+            public function findByUserId(UserId $userId): ?Account
+            {
+                return null;
+            }
+            public function findUserIdByToken(string $token, \DateTimeImmutable $now): ?UserId
+            {
+                return null;
+            }
             public function save(Account $account): void {}
             public function replaceToken(UserId $userId, string $token, \DateTimeImmutable $expiresAt): void {}
         };
         $hasher = new class implements PasswordHasher {
-            public function hash(string $plainText): string { return $plainText; }
-            public function verify(string $plainText, string $hash): bool { return false; }
+            public function hash(string $plainText): string
+            {
+                return $plainText;
+            }
+            public function verify(string $plainText, string $hash): bool
+            {
+                return false;
+            }
         };
 
         $this->expectException(ConflictException::class);

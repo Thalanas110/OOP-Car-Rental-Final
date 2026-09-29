@@ -24,10 +24,28 @@ final readonly class Booking
         return new self($id, $carId, $userId, $dateRange, $dailyRate, $totalCost);
     }
 
-    public function id(): ?BookingId { return $this->id; }
-    public function carId(): CarId { return $this->carId; }
-    public function userId(): UserId { return $this->userId; }
-    public function dateRange(): DateRange { return $this->dateRange; }
-    public function dailyRate(): Money { return $this->dailyRate; }
-    public function totalCost(): Money { return $this->totalCost; }
+    public function id(): ?BookingId
+    {
+        return $this->id;
+    }
+    public function carId(): CarId
+    {
+        return $this->carId;
+    }
+    public function userId(): UserId
+    {
+        return $this->userId;
+    }
+    public function dateRange(): DateRange
+    {
+        return $this->dateRange;
+    }
+    public function dailyRate(): Money
+    {
+        return $this->dailyRate;
+    }
+    public function totalCost(): Money
+    {
+        return $this->totalCost;
+    }
 }

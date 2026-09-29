@@ -51,9 +51,9 @@ final class Bootstrap
                 $config = $container->get(Config::class);
                 return new PdoConnectionFactory()->create($config);
             },
-            JsonResponder::class => static fn (): JsonResponder => new JsonResponder(),
-            DocsController::class => static fn (): DocsController => new DocsController(dirname(__DIR__, 2) . '/docs/openapi/openapi.yaml', dirname(__DIR__, 2) . '/public/docs/index.html'),
-            Clock::class => static fn (): Clock => new SystemClock(),
+            JsonResponder::class => static fn(): JsonResponder => new JsonResponder(),
+            DocsController::class => static fn(): DocsController => new DocsController(dirname(__DIR__, 2) . '/docs/openapi/openapi.yaml', dirname(__DIR__, 2) . '/public/docs/index.html'),
+            Clock::class => static fn(): Clock => new SystemClock(),
             TransactionManager::class => static function (ContainerInterface $container): TransactionManager {
                 /** @var PDO $pdo */
                 $pdo = $container->get(PDO::class);
@@ -69,7 +69,7 @@ final class Bootstrap
                 $pdo = $container->get(PDO::class);
                 return new \App\Modules\Identity\Infrastructure\Persistence\PdoPasswordUpdater($pdo);
             },
-            PasswordHasher::class => static fn (): PasswordHasher => new NativePasswordHasher(),
+            PasswordHasher::class => static fn(): PasswordHasher => new NativePasswordHasher(),
             TokenIssuer::class => static function (ContainerInterface $container): TokenIssuer {
                 /** @var OpaqueTokenIssuer $issuer */
                 $issuer = $container->get(OpaqueTokenIssuer::class);
@@ -123,7 +123,7 @@ final class Bootstrap
                 $pdo = $container->get(PDO::class);
                 return new \App\Modules\Bookings\Infrastructure\Persistence\PdoBookingRepository($pdo);
             },
-            BookingPolicy::class => static fn (): BookingPolicy => new BookingPolicy(),
+            BookingPolicy::class => static fn(): BookingPolicy => new BookingPolicy(),
             CreateBookingHandler::class => static function (ContainerInterface $container): CreateBookingHandler {
                 /** @var BookingRepository $bookings */
                 $bookings = $container->get(BookingRepository::class);

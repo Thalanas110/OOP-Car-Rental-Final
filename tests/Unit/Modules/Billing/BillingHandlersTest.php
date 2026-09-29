@@ -24,17 +24,40 @@ final class BillingHandlersTest extends TestCase
     public function testRecordsPaymentAndGrantsVipAccessAtThreshold(): void
     {
         $repository = new class implements PaymentRepository {
-            public function bookingExists(BookingId $bookingId): bool { return true; }
-            public function userIdForBooking(BookingId $bookingId): ?UserId { return UserId::fromInt(7); }
-            public function save(Payment $payment): Payment { return $payment; }
-            public function totalPaidForUser(UserId $userId): Money { return Money::fromDecimal('500000.00'); }
+            public function bookingExists(BookingId $bookingId): bool
+            {
+                return true;
+            }
+            public function userIdForBooking(BookingId $bookingId): ?UserId
+            {
+                return UserId::fromInt(7);
+            }
+            public function save(Payment $payment): Payment
+            {
+                return $payment;
+            }
+            public function totalPaidForUser(UserId $userId): Money
+            {
+                return Money::fromDecimal('500000.00');
+            }
         };
         $vip = new class implements VipAccountPort {
             public bool $granted = false;
-            public function addPoints(UserId $userId, Money $amount): Money { return Money::fromDecimal('500000.00'); }
-            public function grantAccess(UserId $userId): void { $this->granted = true; }
+            public function addPoints(UserId $userId, Money $amount): Money
+            {
+                return Money::fromDecimal('500000.00');
+            }
+            public function grantAccess(UserId $userId): void
+            {
+                $this->granted = true;
+            }
         };
-        $transactions = new class implements TransactionManager { public function run(callable $operation): mixed { return $operation(); } };
+        $transactions = new class implements TransactionManager {
+            public function run(callable $operation): mixed
+            {
+                return $operation();
+            }
+        };
 
         $handler = new RecordPaymentHandler($repository, $vip, new VipPolicy(Money::fromDecimal('500000.00')), $transactions);
         $view = $handler(new RecordPayment(12, '1000.00'));
@@ -47,13 +70,35 @@ final class BillingHandlersTest extends TestCase
     public function testRejectsPaymentForMissingBooking(): void
     {
         $repository = new class implements PaymentRepository {
-            public function bookingExists(BookingId $bookingId): bool { return false; }
-            public function userIdForBooking(BookingId $bookingId): ?UserId { return null; }
-            public function save(Payment $payment): Payment { return $payment; }
-            public function totalPaidForUser(UserId $userId): Money { return Money::fromDecimal('0.00'); }
+            public function bookingExists(BookingId $bookingId): bool
+            {
+                return false;
+            }
+            public function userIdForBooking(BookingId $bookingId): ?UserId
+            {
+                return null;
+            }
+            public function save(Payment $payment): Payment
+            {
+                return $payment;
+            }
+            public function totalPaidForUser(UserId $userId): Money
+            {
+                return Money::fromDecimal('0.00');
+            }
         };
-        $vip = new class implements VipAccountPort { public function addPoints(UserId $userId, Money $amount): Money { return $amount; } public function grantAccess(UserId $userId): void {} };
-        $transactions = new class implements TransactionManager { public function run(callable $operation): mixed { return $operation(); } };
+        $vip = new class implements VipAccountPort {
+            public function addPoints(UserId $userId, Money $amount): Money
+            {
+                return $amount;
+            } public function grantAccess(UserId $userId): void {}
+        };
+        $transactions = new class implements TransactionManager {
+            public function run(callable $operation): mixed
+            {
+                return $operation();
+            }
+        };
 
         $this->expectException(NotFoundException::class);
         (new RecordPaymentHandler($repository, $vip, new VipPolicy(Money::fromDecimal('500000.00')), $transactions))(new RecordPayment(12, '1000.00'));
@@ -62,10 +107,22 @@ final class BillingHandlersTest extends TestCase
     public function testReadsTotalPaid(): void
     {
         $repository = new class implements PaymentRepository {
-            public function bookingExists(BookingId $bookingId): bool { return true; }
-            public function userIdForBooking(BookingId $bookingId): ?UserId { return UserId::fromInt(7); }
-            public function save(Payment $payment): Payment { return $payment; }
-            public function totalPaidForUser(UserId $userId): Money { return Money::fromDecimal('3000.00'); }
+            public function bookingExists(BookingId $bookingId): bool
+            {
+                return true;
+            }
+            public function userIdForBooking(BookingId $bookingId): ?UserId
+            {
+                return UserId::fromInt(7);
+            }
+            public function save(Payment $payment): Payment
+            {
+                return $payment;
+            }
+            public function totalPaidForUser(UserId $userId): Money
+            {
+                return Money::fromDecimal('3000.00');
+            }
         };
 
         self::assertSame('3000.00', (new GetTotalPaidHandler($repository))(new GetTotalPaid(7))->totalPaid);

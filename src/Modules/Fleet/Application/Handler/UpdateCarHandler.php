@@ -17,7 +17,9 @@ final readonly class UpdateCarHandler
     public function __invoke(UpdateCar $command): CarView
     {
         $car = $this->cars->find(CarId::fromInt($command->carId));
-        if ($car === null) { throw new NotFoundException('Car was not found.'); }
+        if ($car === null) {
+            throw new NotFoundException('Car was not found.');
+        }
         $car->updateRateAndPlate(Money::fromDecimal($command->dailyRate), $command->plateNumber);
         return CarView::fromEntity($this->cars->save($car));
     }

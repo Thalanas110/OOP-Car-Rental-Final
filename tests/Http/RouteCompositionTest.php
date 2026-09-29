@@ -16,7 +16,7 @@ final class RouteCompositionTest extends TestCase
             'JWT_SECRET' => 'test-secret', 'TOKEN_TTL' => '3600', 'LUXURY_CAR_DAILY_RATE' => '200000.00', 'VIP_POINTS_THRESHOLD' => '500000.00',
         ]);
         $routes = $app->getRouteCollector()->getRoutes();
-        $signatures = array_map(static fn ($route): string => implode(',', $route->getMethods()) . ' ' . $route->getPattern(), $routes);
+        $signatures = array_map(static fn($route): string => implode(',', $route->getMethods()) . ' ' . $route->getPattern(), $routes);
 
         self::assertContains('POST /login', $signatures);
         self::assertContains('PATCH /useraccount', $signatures);
