@@ -1,0 +1,36 @@
+{
+  "name": "car-rental/api",
+  "description": "Domain-driven modular monolith for the Car Rental API",
+  "license": "MIT",
+  "type": "project",
+  "require": {
+    "php": ">=8.3",
+    "php-di/php-di": "^7.0",
+    "nyholm/psr7": "^1.8",
+    "php-di/slim-bridge": "^3.4",
+    "slim/slim": "^4.15"
+  },
+  "require-dev": {
+    "phpstan/phpstan": "^2.1",
+    "phpunit/phpunit": "^11.5",
+    "friendsofphp/php-cs-fixer": "^3.75",
+    "symfony/yaml": "^7.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit --testdox",
+    "analyse": "phpstan analyse --level=9",
+    "format:check": "php-cs-fixer check --diff",
+    "format": "php-cs-fixer fix",
+    "serve": "php -S 127.0.0.1:8080 -t public public/index.php"
+  }
+}
