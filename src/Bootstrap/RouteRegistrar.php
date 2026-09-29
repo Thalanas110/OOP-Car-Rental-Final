@@ -18,6 +18,9 @@ use App\Shared\Presentation\Http\Middleware\ExceptionMiddleware;
 use App\Shared\Presentation\Http\Middleware\JsonBodyMiddleware;
 use App\Shared\Presentation\Http\Middleware\RequestIdMiddleware;
 use App\Shared\Presentation\Http\LegacyRouteAdapter;
+use App\Modules\Identity\Presentation\Http\Middleware\AuthenticationMiddleware;
+use App\Shared\Application\Auth\AuthorizationPolicy;
+use App\Shared\Presentation\Http\Response\JsonResponder;
 use Psr\Container\ContainerInterface;
 use Slim\App;
 
@@ -25,14 +28,18 @@ final class RouteRegistrar
 {
     public static function register(App $app, ContainerInterface $container): void
     {
-        IdentityRoutes::register($app, $container->get(IdentityController::class));
-        UserRoutes::register($app, $container->get(UserController::class));
-        FleetRoutes::register($app, $container->get(FleetController::class));
-        BookingRoutes::register($app, $container->get(BookingController::class));
-        BillingRoutes::register($app, $container->get(BillingController::class));
+        $responder = $container->get(JsonResponder::class);
+        $authentication = new AuthenticationMiddleware($container->get(\App\Modules\Identity\Application\Security\TokenVerifier::class), $responder);
+        $authorization = new \App\Shared\Presentation\Http\Middleware\AuthorizationMiddleware($container->get(AuthorizationPolicy::class), $responder);
+        $adminAuthorization = new \App\Shared\Presentation\Http\Middleware\AuthorizationMiddleware($container->get(AuthorizationPolicy::class), $responder, true);
+        IdentityRoutes::register($app, $container->get(IdentityController::class), $authentication, $authorization);
+        UserRoutes::register($app, $container->get(UserController::class), $authentication, $authorization, $adminAuthorization);
+        FleetRoutes::register($app, $container->get(FleetController::class), $authentication, $authorization, $adminAuthorization);
+        BookingRoutes::register($app, $container->get(BookingController::class), $authentication, $authorization);
+        BillingRoutes::register($app, $container->get(BillingController::class), $authentication, $authorization);
         $app->add(new JsonBodyMiddleware());
         $app->add(new LegacyRouteAdapter());
         $app->add(new RequestIdMiddleware());
-        $app->add(new ExceptionMiddleware($container->get(\App\Shared\Presentation\Http\Response\JsonResponder::class)));
+        $app->add(new ExceptionMiddleware($responder));
     }
 }
