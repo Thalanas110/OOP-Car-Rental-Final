@@ -30,6 +30,7 @@ use App\Shared\Infrastructure\Persistence\PdoConnectionFactory;
 use App\Shared\Infrastructure\Persistence\PdoTransactionManager;
 use App\Shared\Infrastructure\Time\SystemClock;
 use App\Shared\Presentation\Http\Response\JsonResponder;
+use App\Shared\Presentation\Http\DocsController;
 use DI\ContainerBuilder;
 use PDO;
 use Psr\Container\ContainerInterface;
@@ -51,6 +52,7 @@ final class Bootstrap
                 return new PdoConnectionFactory()->create($config);
             },
             JsonResponder::class => static fn (): JsonResponder => new JsonResponder(),
+            DocsController::class => static fn (): DocsController => new DocsController(dirname(__DIR__, 2) . '/docs/openapi/openapi.yaml', dirname(__DIR__, 2) . '/public/docs/index.html'),
             Clock::class => static fn (): Clock => new SystemClock(),
             TransactionManager::class => static fn (ContainerInterface $container): TransactionManager => new PdoTransactionManager($container->get(PDO::class)),
             AccountRepository::class => static fn (ContainerInterface $container): AccountRepository => new \App\Modules\Identity\Infrastructure\Persistence\PdoAccountRepository($container->get(PDO::class)),

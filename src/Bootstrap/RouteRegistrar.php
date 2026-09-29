@@ -21,6 +21,7 @@ use App\Shared\Presentation\Http\LegacyRouteAdapter;
 use App\Modules\Identity\Presentation\Http\Middleware\AuthenticationMiddleware;
 use App\Shared\Application\Auth\AuthorizationPolicy;
 use App\Shared\Presentation\Http\Response\JsonResponder;
+use App\Shared\Presentation\Http\DocsController;
 use Psr\Container\ContainerInterface;
 use Slim\App;
 
@@ -28,6 +29,9 @@ final class RouteRegistrar
 {
     public static function register(App $app, ContainerInterface $container): void
     {
+        $docs = $container->get(DocsController::class);
+        $app->get('/docs', [$docs, 'ui']);
+        $app->get('/docs/openapi.yaml', [$docs, 'document']);
         $responder = $container->get(JsonResponder::class);
         $authentication = new AuthenticationMiddleware($container->get(\App\Modules\Identity\Application\Security\TokenVerifier::class), $responder);
         $authorization = new \App\Shared\Presentation\Http\Middleware\AuthorizationMiddleware($container->get(AuthorizationPolicy::class), $responder);
